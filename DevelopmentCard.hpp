@@ -16,7 +16,7 @@ enum CardType {
 // Abstract class for all developments cards
 class DevelopmentCard {
     public:
-        virtual void use() = 0;
+        virtual void use() = 0;     // make func and class abstract - must implement
         virtual ~DevelopmentCard() = default;
 };
 
@@ -31,7 +31,7 @@ class DevelopmentCardFactory {
 // Promotion Card (Abstract class for all Promotion cards)
 class PromotionCard : public DevelopmentCard{
     public:
-        virtual void use() = 0;
+        virtual void use() = 0;     // make func and class abstract - must implement
 };
 
 class RoadBuildingCard : public PromotionCard {

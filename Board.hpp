@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include "Tile.hpp"
 
 using std::vector, std::string;
 
@@ -7,14 +8,14 @@ namespace ariel {
     class Board
     {
     private:
-        vector<vector<string>> board;
-        vector<vector<int>> boardNum;
+        vector<vector<Tile>> board;
+
 
     public:
         Board();
         
-        void placeSettlement(vector<string> places, vector<int> placesNum, string name);
-        void placeRoad(vector<string> places, vector<int> placesNum, string name);
+        int placeSettlement(Player& owner, size_t tileX, size_t tileY, VertexPosition  tilePos);
+        int placeRoad(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos);
         void printBoard();
     };
 }

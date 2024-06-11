@@ -12,8 +12,6 @@
 using std::exception, std::cout, std::endl, std::vector, std::string;
 using namespace ariel;
 
-#define NUM_OF_PLAYER 3
-
 int main()
 {
     Player p1("Amit");
@@ -21,13 +19,7 @@ int main()
     Player p3("Dana");
     Catan catan(p1, p2, p3);
     // Starting of the game. Every player places two settlements and two roads.
-
-    catan.ChooseStartingPlayer();   // should print the name of the starting player
-    
-    for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
-        
-    }
-
+    catan.ChooseStartingPlayer();   // should print the name of the starting player, assume it is Amit.
     Board board = catan.getBoard(); // get the board of the game.
     vector<string> places = {"Forest", "Hills"};
     vector<int> placesNum = {5, 6};

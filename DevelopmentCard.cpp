@@ -26,6 +26,7 @@ namespace ariel{
             throw std::invalid_argument("Invalid card type.");
             break;
         }
+        return NULL;
     }
 
     void RoadBuildingCard::use(){

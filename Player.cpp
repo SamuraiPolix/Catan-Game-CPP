@@ -20,6 +20,9 @@ namespace ariel{
             board.board[placesNum[i]][places[i]] = "Settlement";
         }
     }
+    string Player::getName(){
+        return name;
+    }
     // void Player::placeRoad(vector<string> places, vector<int> placesNum, Board board);
     // void Player::buyDevelopmentCard();
     // void Player::printPoints();
