@@ -27,8 +27,8 @@ namespace ariel{
 
         public:
             Player(string name);
-            int placeSettlement(int index, Catan& catan);
-            int placeRoad(int index, Catan& catan);
+            int placeSettlement(size_t index, Catan& catan);
+            int placeRoad(size_t index, Catan& catan);
             void buyDevelopmentCard(Catan& catan);
             void addDevelopmentCard(DevelopmentCard& card);
             void printPoints();
@@ -43,7 +43,7 @@ namespace ariel{
             void addTile(Tile& tile);
             void addResource(ResourceType resource, int amount);
             int getVictoryPoints();
-            int addVictoryPoints(int points);
+            int addVictoryPoints(size_t points);
             vector<Tile>& getTiles();
     };
 }

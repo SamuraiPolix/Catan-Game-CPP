@@ -26,7 +26,7 @@ int main()
 
     catan.ChooseStartingPlayer();   // should print the name of the starting player
     
-    int choice = -1;
+    size_t choice = 0;
     for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
         Player& currPlayer = catan.getCurrentPlayer();
         cout << "Player " << currPlayer.getName() << " turn" << endl;

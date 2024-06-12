@@ -1,5 +1,5 @@
-#include "Player.hpp";
-#include "ResourceTypes.hpp";
+#include "Player.hpp"
+#include "ResourceTypes.hpp"
 #include <iostream>
 
 using std::vector, std::string, std::map, std::cout, std::endl;
@@ -15,7 +15,7 @@ namespace ariel{
         developmentCards = {};
         victoryPoints = 0;
     }
-    int Player::placeSettlement(int index, Catan& catan){
+    int Player::placeSettlement(size_t index, Catan& catan){
         // make sure its the player's turn
         if (currTurn == false){
             throw std::invalid_argument("Player tried to place a settlement when it's not his turn");
@@ -43,7 +43,7 @@ namespace ariel{
     int Player::numOfSettlements(){
         return settlements.size();
     }
-    void Player::placeRoad(int index, Catan& catan){
+    int Player::placeRoad(size_t index, Catan& catan){
         // // make sure its the player's turn
         // if (currTurn == false){
         //     throw std::invalid_argument("Player tried to place a road when it's not his turn");
@@ -62,7 +62,7 @@ namespace ariel{
         //     resources[ResourceType::Wood-1]--;
         //     resources[ResourceType::Brick-1]--;
         // }
-        // return status;
+        return status;
     }
     void Player::buyDevelopmentCard(Catan& catan){
         if (currTurn == false){
@@ -124,8 +124,9 @@ namespace ariel{
         return victoryPoints;
     }
 
-    int Player::addVictoryPoints(int points){
+    int Player::addVictoryPoints(size_t points){
         victoryPoints += points;
+        return victoryPoints;
     }
 
     vector<Tile>& Player::getTiles(){
