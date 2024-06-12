@@ -3,17 +3,30 @@
 namespace ariel{
     // edgePosition + - operators override
     EdgePosition operator+(EdgePosition pos, int num){
-        return (pos + num) % 6;
+        return (EdgePosition)(((int)(pos + num)) % 6);
     }
     EdgePosition operator+(int num, EdgePosition pos){
-        return (pos + num) % 6;
+        return (EdgePosition)(((int)(pos + num)) % 6);
     }
     EdgePosition operator-(EdgePosition pos, int num){
-        return (pos - num) % 6;
+        return (EdgePosition)(((int)(pos-num)) % 6);
     }
     EdgePosition operator-(int num, EdgePosition pos){
-        return (pos - num) % 6;
+        return (EdgePosition)(((int)(num - pos)) % 6);
     }
+    VertexPosition operator+(VertexPosition pos, int num){
+        return (VertexPosition)(((int)(pos + num)) % 6);
+    }
+    VertexPosition operator+(int num, VertexPosition pos){
+        return (VertexPosition)(((int)(pos + num)) % 6);
+    }
+    VertexPosition operator-(VertexPosition pos, int num){
+        return (VertexPosition)(((int)(pos - num)) % 6);
+    }
+    VertexPosition operator-(int num, VertexPosition pos){
+        return (VertexPosition)(((int)(num - pos)) % 6);
+    }
+
     void initHexVertices(vector<Buildable>& hexVertices){
         for (size_t i = 0; i < hexVertices.size(); i++){
             hexVertices[i] = Buildable();

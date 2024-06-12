@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <string>
 #include "Tile.hpp"
@@ -11,9 +12,9 @@ namespace ariel {
         vector<vector<Tile>> board;
 
     // private methods - mostly used to simplify API
-        int hasBuildingNear(Player& owner, size_t tileX, size_t tileY, VertexPosition tilePos) const;
-        int hasRoadNear(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos) const;
-        int indexToTilePos(size_t& tileX, size_t& tileY, VertexPosition& tilePos) const;
+        int hasBuildingNear(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos) const;
+        int hasRoadNear(Player& owner, size_t tileX, size_t tileY, VertexPosition tilePos) const;
+        int indexToTilePos(size_t index, size_t& tileX, size_t& tileY, VertexPosition& tilePos) const;
         int placeSettlement(Player& owner, size_t tileX, size_t tileY, VertexPosition  tilePos);
         int placeRoad(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos);
     public:

@@ -1,10 +1,13 @@
-
+#pragma once
 #include "ResourceTypes.hpp"
 #include "Player.hpp"
 #include "Buildable.hpp"
+#include <vector>
+
+using std::vector;
 
 namespace ariel {
-    enum VertexPosition {
+    enum class VertexPosition {
         TOP_LEFT = 0,
         TOP = 1,
         TOP_RIGHT = 2,
@@ -13,10 +16,10 @@ namespace ariel {
         BOTTOM_LEFT = 5
     };
 
-    enum EdgePosition {
+    enum class EdgePosition {
         TOP_LEFT = 0,
         TOP_RIGHT = 1,
-        RIGHT = 2
+        RIGHT = 2,
         BOTTOM_RIGHT = 3,
         BOTTOM_LEFT = 4,
         LEFT = 5
@@ -27,6 +30,11 @@ namespace ariel {
     EdgePosition operator+(int num, EdgePosition pos);
     EdgePosition operator-(EdgePosition pos, int num);
     EdgePosition operator-(int num, EdgePosition pos);
+    // override VertexPosition + - operators
+    VertexPosition operator+(VertexPosition pos, int num);
+    VertexPosition operator+(int num, VertexPosition pos);
+    VertexPosition operator-(VertexPosition pos, int num);
+    VertexPosition operator-(int num, VertexPosition pos);
 
     class Tile
     {

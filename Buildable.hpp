@@ -1,8 +1,10 @@
 
-#include "Player.hpp"
-#include "Tile.hpp"
+#pragma once
 
 namespace ariel {
+    class Player;
+    class Tile;
+
     enum BuildableTypes{
         None = 0,
         Road = 1,

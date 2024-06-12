@@ -9,10 +9,12 @@
 #include "Player.hpp"
 #include "ResourceTypes.hpp"
 
-using std::exception, std::cout, std::endl, std::vector, std::string;
+using std::exception, std::cout, std::endl, std::vector, std::string, std::cin;
 using namespace ariel;
 
 #define NUM_OF_PLAYER 3
+
+void dealWithTrade(Player& currPlayer, Catan& catan);
 
 int main()
 {
@@ -24,7 +26,7 @@ int main()
 
     catan.ChooseStartingPlayer();   // should print the name of the starting player
     
-    size_t choice = -1;
+    int choice = -1;
     for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
         Player& currPlayer = catan.getCurrentPlayer();
         cout << "Player " << currPlayer.getName() << " turn" << endl;
@@ -59,20 +61,22 @@ int main()
 
     while (true)
     {
+        catan.getBoard().printBoard();
         Player& currPlayer = catan.getCurrentPlayer();
         cout << "Player " << currPlayer.getName() << " turn" << endl;
 
         cout << "Choose your action:" << endl;
         cout << "1. Throw cubes" << endl;
-        cout << "2. Use development card" << endl;
+        cout << "2. Use development card (You can also use a card after throwing cubes)" << endl;
         cin >> choice;
         if (choice == 1){
-            currPlayer.rollDice();
+            currPlayer.rollDice(catan);
             cout << "Choose your action:" << endl;
             cout << "1. Build a settlement" << endl;
             cout << "2. Build a road" << endl;
             cout << "3. Buy a development card" << endl;
-            cout << "4. Trade" << endl;
+            cout << "4. Use a development card" << endl;
+            cout << "5. Trade" << endl;
             cin >> choice;
             if (choice == 1){
                 cout << "Choose a vertex to place a settlement" << endl;
@@ -105,32 +109,46 @@ int main()
                 } while (status == -1);
             }
             else if (choice == 3){
-                currPlayer.buyDevelopmentCard();
+                currPlayer.buyDevelopmentCard(catan);
+                cout << "Do you want to use the development card? (1 for yes, 0 for no)" << endl;
+                cin >> choice;
+                // if (choice == 1){
+                //     currPlayer.useDevelopmentCard();
+                // }
             }
             else if (choice == 4){
-                dealWithTrade(currPlayer);
+                // currPlayer.useDevelopmentCard();
+            }
+            else if (choice == 5){
+                dealWithTrade(currPlayer, catan);
             }
         }
         else if (choice == 2){
-            currPlayer.useDevelopmentCard();
+            // currPlayer.useDevelopmentCard();
         }
         else {
             cout << "Invalid choice" << endl;
             continue;
         }
         currPlayer.endTurn(catan);
+
+        // check if someone won
+        if (catan.printWinner() == 1){
+            break;
+        }
     }
     return 0;
 }
 
-void dealWithTrade(Player& currPlayer){
+void dealWithTrade(Player& currPlayer, Catan& catan){
+    int choice = -1;
+    int chosenPlayer = -1;
     do {
         cout << "Choose a player to trade with (enter the number next to the name)" << endl;
         catan.printPlayersExceptCurrent();
-        int choice = -1;
-        cin >> choice;
+        cin >> chosenPlayer;
         // TODO add check for invalid choice (current player or non existing player, usign a function in Catan class)
-    } while (choice < 0 || choice > 2);
+    } while (chosenPlayer < 0 || chosenPlayer > 2);
 
     if (choice == 1){
         // choose a resource to send
@@ -166,7 +184,7 @@ void dealWithTrade(Player& currPlayer){
         // choose amout of resource to send
         do {
             cout << "Choose the amount of resources to send" << endl;
-            cout << "You have " << currPlayer.getResourceAmount(choiceSend)<< " of chosen resource" << endl;
+            cout << "You have " << currPlayer.getResourceAmount((ResourceType)choiceSend)<< " of chosen resource" << endl;
             cin >> amountSend;
 
             if (amountSend < 1 || amountSend > 5){
@@ -177,7 +195,7 @@ void dealWithTrade(Player& currPlayer){
         // choose amout of resource to receive
         do {
             cout << "Choose the amount of resources to receive" << endl;
-            cout << "They have " << catan.getPlayerByName().getResourceAmount(choiceReceive)<< " of chosen resource" << endl;
+            cout << "They have " << catan.getPlayerById(chosenPlayer).getResourceAmount((ResourceType)choiceReceive)<< " of chosen resource" << endl;
             cin >> choiceReceive;
 
             if (choiceReceive < 1 || choiceReceive > 5){
@@ -185,6 +203,6 @@ void dealWithTrade(Player& currPlayer){
             }
         } while (choiceReceive < 1 || choiceReceive > 5);
         
-        currPlayer.trade(p2, choiceSend, choiceReceive, amountSend, amountReceive);
+        currPlayer.trade(catan.getPlayerById(chosenPlayer), (ResourceType)choiceSend, (ResourceType)choiceReceive, amountSend, amountReceive);
     }
 }
