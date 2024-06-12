@@ -13,26 +13,23 @@ namespace ariel{
         private:        // by default
             string name;
             map<ResourceType, int> resources;
-            vector<Buildable> roads;
-            vector<Buildable> settlements;
+            vector<size_t> roads;
+            vector<size_t> settlements;     // holds board index of all settlements
+            bool currTurn;
             
 
         public:
-            Player(string name){
-                this->name = name;
-                resources = {{ResourceType::Wood, 0}, {ResourceType::Brick, 0}, {ResourceType::Sheep, 0}, {ResourceType::Wheat, 0}, {ResourceType::Ore, 0}};
-                settlements = {};
-                settlementsNum = {};
-                roads = {};
-                roadsNum = {};
-            }
-            void placeSettlement(vector<string> places, vector<int> placesNum, Board board);
-            void placeRoad(vector<string> places, vector<int> placesNum, Board board);
+            Player(string name);
+            int placeSettlement(size_t index, Board& board);
+            int placeRoad(size_t index, Board& board);
             void buyDevelopmentCard();
             void printPoints();
             void trade(Player& player, const string& resourceSent, const string& resourceReceived, const int& amountSent, const int& amountReceived);
             void rollDice();
             void endTurn();
+            void startTurn();
             string getName();
+            int numOfSettlements();
+            int numOfRoads();
     };
 }

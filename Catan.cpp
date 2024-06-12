@@ -20,14 +20,31 @@ namespace ariel {
     }
 
     // returns the current playing player
-    Player& Catan::getCurrentPlayer(){
+    Player& Catan::getCurrentPlayer() const{
         return this->players[this->currPlayer];
     }
 
-    Board& Catan::getBoard(){
+    Board& Catan::getBoard() const{
         return this->board;
     }
     void Catan::printWinner(){
         // to be implemented
+    }
+    int Catan::placeSettlement(Player& owner, size_t index){
+        return board.placeSettlement(owner, index);
+    }
+    int Catan::placeRoad(Player& owner, size_t index){
+        return board.placeRoad(owner, index);
+    }
+    void Catan::nextPlayer(){
+        this->currPlayer = (this->currPlayer + 1) % 3;
+        getCurrentPlayer().startTurn();
+    }
+    void Catan::printPlayersExceptCurrent(){
+        for (size_t i = 0; i < players.size(); i++){
+            if (i != this->currPlayer){
+                cout << i << ". " << this->players[i].getName() << endl;
+            }
+        }
     }
 }
