@@ -1,39 +1,18 @@
 #include "Tile.hpp"
 
 namespace ariel{
-    // edgePosition + - operators override
-    EdgePosition operator+(EdgePosition pos, int num){
-        return (EdgePosition)(((int)(pos + num)) % 6);
-    }
-    EdgePosition operator+(int num, EdgePosition pos){
-        return (EdgePosition)(((int)(pos + num)) % 6);
-    }
-    EdgePosition operator-(EdgePosition pos, int num){
-        return (EdgePosition)(((int)(pos-num)) % 6);
-    }
-    EdgePosition operator-(int num, EdgePosition pos){
-        return (EdgePosition)(((int)(num - pos)) % 6);
-    }
-    VertexPosition operator+(VertexPosition pos, int num){
-        return (VertexPosition)(((int)(pos + num)) % 6);
-    }
-    VertexPosition operator+(int num, VertexPosition pos){
-        return (VertexPosition)(((int)(pos + num)) % 6);
-    }
-    VertexPosition operator-(VertexPosition pos, int num){
-        return (VertexPosition)(((int)(pos - num)) % 6);
-    }
-    VertexPosition operator-(int num, VertexPosition pos){
-        return (VertexPosition)(((int)(num - pos)) % 6);
-    }
 
-    void initHexVertices(vector<Buildable>& hexVertices){
-        for (size_t i = 0; i < hexVertices.size(); i++){
+    ostream& operator<<(std::ostream& os, const Tile& tile){
+        os << tile.resource << " (" << tile.diceNumber << ") ";
+        return os;
+    }
+    void Tile::initHexVertices(){
+        for (size_t i = 0; i < 6; i++){
             hexVertices[i] = Buildable();
         }
     }
-    void initHexEdges(vector<Buildable>& hexEdges){
-        for (size_t i = 0; i < hexEdges.size(); i++){
+    void Tile::initHexEdges(){
+        for (size_t i = 0; i < 6; i++){
             hexEdges[i] = Buildable();
         }
     }
@@ -52,7 +31,7 @@ namespace ariel{
     void Tile::removePlayer(Player& player){
         for (size_t ind = 0; ind < players.size(); ind++){
             if (players[ind].getName() == player.getName()){
-                players.erase(players.begin() + ind);
+                players.erase(players.begin() + (int)ind);
                 break;      // found the player, no need to continue
             }
         }
@@ -70,10 +49,10 @@ namespace ariel{
     vector<Player> Tile::getPlayers() const{
         return this->players;
     }
-    Buildable& Tile::getHexVertex(VertexPosition pos) const{
+    Buildable& Tile::getVertex(VertexPosition pos){
         return hexVertices[pos];
     }
-    Buildable& Tile::getHexEdge(EdgePosition pos) const{
+    Buildable& Tile::getEdge(EdgePosition pos){
         return hexEdges[pos];
     }
     int Tile::setSettlementAt(VertexPosition pos, Player& player){

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "ResourceTypes.hpp"
+#include "Types.hpp"
 #include "Buildable.hpp"
 #include "DevelopmentCard.hpp"
 #include "Tile.hpp"

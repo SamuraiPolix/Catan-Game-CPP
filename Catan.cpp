@@ -3,14 +3,15 @@
 #include <ctime>
 #include <iostream>
 #include <algorithm>
-#include "ResourceTypes.hpp"
+#include "Types.hpp"
 
 using std::cout, std::endl, std::rand, std::srand, std::time, std::shuffle, std::default_random_engine, std::invalid_argument;
 namespace ariel {
-    Catan::Catan(Player p1, Player p2, Player p3) : board(){
-        this->players.push_back(p1);
-        this->players.push_back(p2);
-        this->players.push_back(p3);
+    Catan::Catan(Player& p1, Player& p2, Player& p3) {
+        board = new Board();
+        this->players.push_back(&p1);
+        this->players.push_back(&p2);
+        this->players.push_back(&p3);
         this->players.shrink_to_fit();
         this->developmentCards = vector<DevelopmentCard*>(25, NULL);
 
@@ -22,11 +23,12 @@ namespace ariel {
         srand(time(0));
         this->currPlayer = rand() % 3;
         std::cout << "The starting player is: " << this->getCurrentPlayer().getName() << std::endl;
+        getCurrentPlayer().startTurn();
     }
 
     // returns the current playing player
     Player& Catan::getCurrentPlayer(){
-        return this->players[(size_t)this->currPlayer];
+        return *this->players[(size_t)this->currPlayer];
     }
 
     Board& Catan::getBoard(){
@@ -45,7 +47,7 @@ namespace ariel {
     void Catan::printPlayersExceptCurrent(){
         for (size_t i = 0; i < players.size(); i++){
             if (i != this->currPlayer){
-                cout << i << ". " << this->players[i].getName() << endl;
+                cout << i << ". " << this->players[i]->getName() << endl;
             }
         }
     }
@@ -82,10 +84,10 @@ namespace ariel {
 
     void Catan::giveResources(int diceRoll){
         for (size_t i = 0; i < players.size(); i++){
-            for (size_t j = 0; j < players[i].numOfSettlements(); j++){
-                if (players[i].getTiles()[j].getNumber() == diceRoll){
-                    ResourceType resource = players[i].getTiles()[j].getResource();
-                    players[i].addResource(resource, 1);
+            for (size_t j = 0; j < players[i]->numOfSettlements(); j++){
+                if (players[i]->getTiles()[j].getNumber() == diceRoll){
+                    ResourceType resource = players[i]->getTiles()[j].getResource();
+                    players[i]->addResource(resource, 1);
                 }
             }
         }
@@ -94,8 +96,8 @@ namespace ariel {
     int Catan::printWinner(){
         // iterate over all players, if someone has 10 points, he won
         for (size_t i = 0; i < players.size(); i++){
-            if (players[i].getVictoryPoints() >= 10){
-                cout << "The winner is: " << players[i].getName() << endl;
+            if (players[i]->getVictoryPoints() >= 10){
+                cout << "The winner is: " << players[i]->getName() << endl;
                 return 1;       // someone won
             }
         }
@@ -103,6 +105,6 @@ namespace ariel {
     }
 
     Player& Catan::getPlayerById(int id){
-        return players[(size_t)id];
+        return *players[(size_t)id];
     }
 }

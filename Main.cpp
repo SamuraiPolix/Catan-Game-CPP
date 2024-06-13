@@ -7,7 +7,7 @@
 #include <vector>
 #include "Catan.hpp"
 #include "Player.hpp"
-#include "ResourceTypes.hpp"
+#include "Types.hpp"
 
 using std::exception, std::cout, std::endl, std::vector, std::string, std::cin;
 using namespace ariel;
@@ -18,14 +18,15 @@ void dealWithTrade(Player& currPlayer, Catan& catan);
 
 int main()
 {
-    Player p1("Amit");
-    Player p2("Yossi");
-    Player p3("Dana");
+    Player p1("Amit");      
+    Player p2("Yossi");     
+    Player p3("Dana");      
     Catan catan(p1, p2, p3);
     // Starting of the game. Every player places two settlements and two roads.
 
     catan.ChooseStartingPlayer();   // should print the name of the starting player
-    
+    Board b = catan.getBoard();
+    catan.getBoard().printBoard();
     size_t choice = 0;
     for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
         Player& currPlayer = catan.getCurrentPlayer();
@@ -38,7 +39,7 @@ int main()
                 cout << "Invalid choice" << endl;
                 cin >> choice;
             }
-            status = p1.placeSettlement(choice, catan);
+            status = currPlayer.placeSettlement(choice, catan);
             if (status == -1){
                 cout << "Please choose another" << endl;
             }
@@ -51,7 +52,7 @@ int main()
                 cout << "Invalid choice" << endl;
                 cin >> choice;
             }
-            status = p1.placeRoad(choice, catan);
+            status = currPlayer.placeRoad(choice, catan);
             if (status == -1){
                 cout << "Please choose another" << endl;
             }
@@ -87,7 +88,7 @@ int main()
                         cout << "Invalid choice" << endl;
                         cin >> choice;
                     }
-                    status = p1.placeSettlement(choice, catan);
+                    status = currPlayer.placeSettlement(choice, catan);
                     if (status == -1){
                         cout << "Please choose another" << endl;
                     }
@@ -102,7 +103,7 @@ int main()
                         cout << "Invalid choice" << endl;
                         cin >> choice;
                     }
-                    status = p1.placeRoad(choice, catan);
+                    status = currPlayer.placeRoad(choice, catan);
                     if (status == -1){
                         cout << "Please choose another" << endl;
                     }

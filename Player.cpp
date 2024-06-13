@@ -1,5 +1,5 @@
 #include "Player.hpp"
-#include "ResourceTypes.hpp"
+#include "Types.hpp"
 #include <iostream>
 
 using std::vector, std::string, std::map, std::cout, std::endl;
@@ -80,7 +80,26 @@ namespace ariel{
         catan.addDevelopmentCard(*this);
     }
     // void Player::printPoints();
-    // void Player::trade(Player& player, const string& resourceSent, const string& resourceReceived, const int& amountSent, const int& amountReceived);
+    void Player::trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const int& amountSent, const int& amountReceived){
+        // make sure its the player's turn
+        if (currTurn == false){
+            throw std::invalid_argument("Player tried to trade when it's not his turn");
+        }
+        // make sure player has enough resources
+        if (resources[resourceSent-1] < amountSent){
+            throw std::invalid_argument("Player doesn't have enough resources to trade\n");
+        }
+        // make sure other player has enough resources
+        if (player.getResourceAmount(resourceReceived) < amountReceived){
+            throw std::invalid_argument("Other player doesn't have enough resources to trade\n");
+        }
+        // remove resources
+        resources[resourceSent-1] -= amountSent;
+        player.addResource(resourceReceived, -amountReceived);
+        // add resources
+        resources[resourceReceived-1] += amountReceived;
+        player.addResource(resourceSent, amountSent);
+    }
     void Player::rollDice(Catan& catan){
         // make sure its the player's turn
         if (currTurn == false){

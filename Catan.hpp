@@ -13,7 +13,7 @@ namespace ariel {
     class Catan
     {
     // private members
-        vector<Player> players;
+        vector<Player*> players;
         int currPlayer;     // index of player in players, with current turn
         Board *board;
         vector<DevelopmentCard*> developmentCards;
@@ -22,7 +22,7 @@ namespace ariel {
         void initCards();
 
     public:
-        Catan(Player p1, Player p2, Player p3);
+        Catan(Player& p1, Player& p2, Player& p3);
         Player& getCurrentPlayer();
         void ChooseStartingPlayer();
         Board& getBoard();

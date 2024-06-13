@@ -1,41 +1,14 @@
 #pragma once
-#include "ResourceTypes.hpp"
+#include "Types.hpp"
 #include "Player.hpp"
 #include "Buildable.hpp"
 #include <vector>
+#include <iostream>
 
-using std::vector;
+using std::vector, std::ostream;
 
 namespace ariel {
-    enum class VertexPosition {
-        TOP_LEFT = 0,
-        TOP = 1,
-        TOP_RIGHT = 2,
-        BOTTOM_RIGHT = 3,
-        BOTTOM = 4,
-        BOTTOM_LEFT = 5
-    };
-
-    enum class EdgePosition {
-        TOP_LEFT = 0,
-        TOP_RIGHT = 1,
-        RIGHT = 2,
-        BOTTOM_RIGHT = 3,
-        BOTTOM_LEFT = 4,
-        LEFT = 5
-    };
-
-    // override edgePosition + - operators
-    EdgePosition operator+(EdgePosition pos, int num);
-    EdgePosition operator+(int num, EdgePosition pos);
-    EdgePosition operator-(EdgePosition pos, int num);
-    EdgePosition operator-(int num, EdgePosition pos);
-    // override VertexPosition + - operators
-    VertexPosition operator+(VertexPosition pos, int num);
-    VertexPosition operator+(int num, VertexPosition pos);
-    VertexPosition operator-(VertexPosition pos, int num);
-    VertexPosition operator-(int num, VertexPosition pos);
-
+    class Buildable;
     class Tile
     {
         // private members
@@ -47,16 +20,19 @@ namespace ariel {
             Buildable hexEdges[6];      // The edges of the tile - can be roads or nothing
         
         // private methods
-            void initHexes();
-            void initEdges();
+            void initHexVertices();
+            void initHexEdges();
 
         public:
-            Tile(ResourceType resource, size_t number) : resource(resource), diceNumber(number), hasRobber(false) {initHexes(); initEdges();};
+            Tile() : resource(ResourceType::Desert), diceNumber(0), hasRobber(false) {initHexVertices(); initHexEdges();};
+            Tile(ResourceType resource, size_t number) : resource(resource), diceNumber(number), hasRobber(false) {initHexVertices(); initHexEdges();};
             void setResource(ResourceType resource);
             void setNumber(size_t number);
             void setRobber(bool hasRobber);
             void addPlayer(Player& player);
             void removePlayer(Player& player);
+
+            friend ostream& operator<<(ostream& os, const Tile& tile);
 
             /*
              * Sets the vertex at the given position to a settlement.
@@ -78,7 +54,7 @@ namespace ariel {
             size_t getNumber() const;
             bool getRobber() const;
             vector<Player> getPlayers() const;
-            Buildable& getVertex(VertexPosition pos) const;
-            Buildable& getEdge(EdgePosition pos) const;
+            Buildable& getVertex(VertexPosition pos);
+            Buildable& getEdge(EdgePosition pos);
     };
 }
