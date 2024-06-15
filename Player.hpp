@@ -14,6 +14,9 @@ namespace ariel{
     class Catan;
     class Player
     {
+        static int playerCounter;
+        static Color colors[3];
+
         private:        // by default
             string name;
             int resources[5];       // holds the amount of each resource (index i := ResourceType(i+1))
@@ -23,6 +26,7 @@ namespace ariel{
             bool currTurn;
             vector<DevelopmentCard*> developmentCards;
             int victoryPoints;
+            Color color;
             // Catan catan;
 
         public:
@@ -45,5 +49,6 @@ namespace ariel{
             int getVictoryPoints();
             int addVictoryPoints(size_t points);
             vector<Tile>& getTiles();
+            Color getColor();
     };
 }

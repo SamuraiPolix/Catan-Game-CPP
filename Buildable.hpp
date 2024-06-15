@@ -1,5 +1,9 @@
 
 #pragma once
+#include <iostream>
+#include "Types.hpp"
+
+using std::ostream;
 
 namespace ariel {
     class Player;
@@ -17,15 +21,18 @@ namespace ariel {
         BuildableTypes type;
         Player* owner;
         Tile* tile;
+        size_t pos;
         
     public:
         Buildable();
-        Buildable(BuildableTypes type, Player& owner);
+        Buildable(BuildableTypes type, Player& owner, size_t pos);
 
         void setSettlement(Player& owner);
         void setRoad(Player& owner);
-        Player& getOwner() const;
+        Player* getOwner() const;
         Tile& getTile() const;
         BuildableTypes getType() const;
+
+        friend ostream& operator<<(ostream& os, const Buildable& buildable);
     };
 }

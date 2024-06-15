@@ -4,6 +4,12 @@
 
 namespace ariel{
     // enum of all resource types
+    enum Color {
+        Black = 30,
+        Red = 31,
+        Green = 32,
+        Blue = 34
+    };
     enum ResourceType {
         Ore = 1,
         Wheat = 2,

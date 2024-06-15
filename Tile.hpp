@@ -18,14 +18,14 @@ namespace ariel {
             vector<Player> players;     // the players that have a settlement or city on the tile (they get resources when the dice number matches the tile)
             Buildable hexVertices[6];       // the vertices of the tile - can be settlements, cities or nothing
             Buildable hexEdges[6];      // The edges of the tile - can be roads or nothing
-        
+            size_t x, y;        // the position of the tile on the board
         // private methods
             void initHexVertices();
             void initHexEdges();
 
         public:
-            Tile() : resource(ResourceType::Desert), diceNumber(0), hasRobber(false) {initHexVertices(); initHexEdges();};
-            Tile(ResourceType resource, size_t number) : resource(resource), diceNumber(number), hasRobber(false) {initHexVertices(); initHexEdges();};
+            Tile() : x(0), y(0), resource(ResourceType::Desert), diceNumber(0), hasRobber(false) {initHexVertices(); initHexEdges();};
+            Tile(size_t x, size_t y, ResourceType resource, size_t number) : x(x), y(y), resource(resource), diceNumber(number), hasRobber(false) {initHexVertices(); initHexEdges();};
             void setResource(ResourceType resource);
             void setNumber(size_t number);
             void setRobber(bool hasRobber);
@@ -56,5 +56,7 @@ namespace ariel {
             vector<Player> getPlayers() const;
             Buildable& getVertex(VertexPosition pos);
             Buildable& getEdge(EdgePosition pos);
+            size_t getX() const {return x;};
+            size_t getY() const {return y;};
     };
 }

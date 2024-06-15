@@ -56,8 +56,9 @@ namespace ariel{
         return hexEdges[pos];
     }
     int Tile::setSettlementAt(VertexPosition pos, Player& player){
+        std::cout << "TYPE: " << hexVertices[pos].getType() << "\n";
         if (hexVertices[pos].getType() == BuildableTypes::None){
-            hexVertices[pos] = Buildable(BuildableTypes::Settlement, player);
+            hexVertices[pos] = Buildable(BuildableTypes::Settlement, player, pos);
 
             // add player to list if is not in it already
             if (this->players.size() == 0){
@@ -79,7 +80,7 @@ namespace ariel{
 
     int Tile::setRoadAt(EdgePosition pos, Player& player){
         if (hexEdges[pos].getType() == BuildableTypes::None){
-            hexEdges[pos] = Buildable(BuildableTypes::Road, player);
+            hexEdges[pos] = Buildable(BuildableTypes::Road, player, pos);
             return 0;
         }
         return -1;

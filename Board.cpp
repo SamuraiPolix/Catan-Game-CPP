@@ -39,7 +39,7 @@ namespace ariel {
         // init board tiles with generated resources and numbers
         int landIndex = 0;
         int numberIndex = 0;
-        for (int row = 0; row < 5; row++){
+        for (size_t row = 0; row < 5; row++){
             // create each row (3, 4, 5, 4, 3 tiles)
             vector<Tile> tilesRow;
             int rowSize = 3;
@@ -48,12 +48,12 @@ namespace ariel {
             } else if (row == 2){
                 rowSize = 5;
             }
-            for (int col = 0; col < rowSize; col++){
+            for (size_t col = 0; col < rowSize; col++){
                 // uses a number only if the land is not a desert
                 if (allLands[landIndex] == ResourceType::Desert){
-                    tilesRow.push_back(Tile((ResourceType)allLands[landIndex], (size_t)0));
+                    tilesRow.push_back(Tile(row, col, (ResourceType)allLands[landIndex], (size_t)0));
                 } else {
-                    tilesRow.push_back(Tile((ResourceType)allLands[landIndex], (size_t)allNumbers[numberIndex]));
+                    tilesRow.push_back(Tile(row, col, (ResourceType)allLands[landIndex], (size_t)allNumbers[numberIndex]));
                     numberIndex++;
                 }
                 landIndex++;
@@ -67,8 +67,8 @@ namespace ariel {
         size_t tileX, tileY;
         VertexPosition tilePos;
         if (indexToTilePos(index, tileX, tileY, tilePos) == -1){
-            cout << "Invalid index" << endl;
-            return -1;
+            throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            + "\nInvalid index\n");
         }
         return placeSettlement(owner, tileX, tileY, tilePos);
     }
@@ -90,11 +90,9 @@ namespace ariel {
         if (owner.numOfSettlements() < 2){
             // try to place a settlement at the given position, returns 0 if successful, -1 if not
             if (this->board[tileY][tileX].setSettlementAt(tilePos, owner) == -1){
-                cout << "Failed to place settlement at " << (int)tileX << ", " << (int)tileY << " on " << (int)tilePos << endl;
-                cout << "Vertex is already taken" << endl;
-                return 0;
+                throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+                + "\nVertex is already taken\n");
             }
-            this->board[tileY][tileX].setSettlementAt(tilePos, owner);
             owner.addTile(this->board[tileY][tileX]);
             return 1;       // success
         }
@@ -102,16 +100,14 @@ namespace ariel {
         // We first need to make sure the player has a road near this vertex
         // Resource: https://www.catan.com/understand-catan/game-rules (page 4 bottom, 5 top)
         if (hasRoadNear(owner, tileX, tileY, tilePos) == -1){
-            cout << "Failed to place settlement at " << (int)tileX << ", " << (int)tileY << " on " << (int)tilePos << endl;
-            cout << "Player " << owner.getName() << " does not have a road connecting to this vertex" << endl;
-            return 0;      // failed to place settlement
+            throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            + "\nPlayer " + owner.getName() + " does not have a road connecting to this vertex\n");
         }
         // Player has a road connecting to desired settlement
         // try to place a settlement at the given position, returns 0 if successful, -1 if not
         if (this->board[tileY][tileX].setSettlementAt(tilePos, owner) == -1){
-            cout << "Failed to place settlement at " << (int)tileX << ", " << (int)tileY << " on " << (int)tilePos << endl;
-            cout << "Vertex is already taken" << endl;
-            return 0;
+            throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            + "\nVertex is already taken\n");
         }
         this->board[tileY][tileX].setSettlementAt(tilePos, owner);
         return 1;       // success
@@ -120,14 +116,13 @@ namespace ariel {
     int Board::placeRoad(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos){
         // We first need to make sure the player has a settlement, city or road near this edge
         if (hasBuildingNear(owner, tileX, tileY, tilePos) == 0){
-            cout << "Failed to place road at " << (int)tileX << ", " << (int)tileY << " on " << (int)tilePos << endl;
-            return 0;
+            throw std::invalid_argument("Failed to place road at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            + "\nPlayer " + owner.getName() + " does not have a building near this edge\n");
         }
         // try to place a road at the given position, returns 0 if successful, -1 if not
         if (this->board[tileY][tileX].setRoadAt(tilePos, owner) == -1){
-            cout << "Failed to place road at " << (int)tileX << ", " << (int)tileY << " on " << (int)tilePos << endl;
-            cout << "Edge is already taken" << endl;
-            return 0;
+            throw std::invalid_argument("Failed to place road at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            + "\nEdge is already taken\n");
         }
         this->board[tileY][tileX].setRoadAt(tilePos, owner);
         return 1;       // success
@@ -139,8 +134,8 @@ namespace ariel {
             return 1;       // road near
         }
         // check if there is a building near on selected tile (check to the left and right of the vertex) - road was already checked
-        if (this->board[tileY][tileX].getVertex((VertexPosition)tilePos).getOwner().getName() == owner.getName() ||
-            this->board[tileY][tileX].getVertex((VertexPosition)tilePos+1).getOwner().getName() == owner.getName())
+        if (this->board[tileY][tileX].getVertex((VertexPosition)tilePos).getOwner()->getName() == owner.getName() ||
+            this->board[tileY][tileX].getVertex((VertexPosition)tilePos+1).getOwner()->getName() == owner.getName())
         {
             return 1;       
         }
@@ -149,51 +144,51 @@ namespace ariel {
 
     int Board::hasRoadNear(Player& owner, size_t tileX, size_t tileY, VertexPosition tilePos){
         // check if there is a road near on selected tile (check to the left and right of the vertex)
-        if (this->board[tileY][tileX].getEdge((EdgePosition)tilePos-1).getOwner().getName() == owner.getName() ||
-            this->board[tileY][tileX].getEdge((EdgePosition)tilePos).getOwner().getName() == owner.getName())
+        if (this->board[tileY][tileX].getEdge((EdgePosition)tilePos-1).getOwner()->getName() == owner.getName() ||
+            this->board[tileY][tileX].getEdge((EdgePosition)tilePos).getOwner()->getName() == owner.getName())
         {
             return 1;       
         }
         // if not found on current tile, check the neighbor according to selected tilePos
         switch (tilePos){
             case VertexPosition::VERTEX_TOP_LEFT:
-                if ((tileX > 0 && this->board[tileY][tileX-1].getEdge(EdgePosition::EDGE_TOP_RIGHT).getOwner().getName() == owner.getName()) ||
-                    (tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT).getOwner().getName() == owner.getName()))
+                if ((tileX > 0 && this->board[tileY][tileX-1].getEdge(EdgePosition::EDGE_TOP_RIGHT).getOwner()->getName() == owner.getName()) ||
+                    (tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT).getOwner()->getName() == owner.getName()))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_TOP:
-                if ((tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].getEdge(EdgePosition::EDGE_RIGHT).getOwner().getName() == owner.getName()) ||
-                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].getEdge(EdgePosition::EDGE_LEFT).getOwner().getName() == owner.getName()))
+                if ((tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].getEdge(EdgePosition::EDGE_RIGHT).getOwner()->getName() == owner.getName()) ||
+                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].getEdge(EdgePosition::EDGE_LEFT).getOwner()->getName() == owner.getName()))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_TOP_RIGHT:
-                if ((tileX < this->board[tileY].size() && this->board[tileY][tileX+1].getEdge(EdgePosition::EDGE_TOP_LEFT).getOwner().getName() == owner.getName()) ||
-                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT).getOwner().getName() == owner.getName()))
+                if ((tileX < this->board[tileY].size() && this->board[tileY][tileX+1].getEdge(EdgePosition::EDGE_TOP_LEFT).getOwner()->getName() == owner.getName()) ||
+                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT).getOwner()->getName() == owner.getName()))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_BOTTOM_RIGHT:
-                if ((tileX < this->board[tileY].size()-1 && this->board[tileY][tileX+1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT).getOwner().getName() == owner.getName()) ||
-                    (tileY < this->board.size()-1 && tileX < this->board[tileY-1].size() && this->board[tileY+1][tileX].getEdge(EdgePosition::EDGE_TOP_RIGHT).getOwner().getName() == owner.getName()))
+                if ((tileX < this->board[tileY].size()-1 && this->board[tileY][tileX+1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT).getOwner()->getName() == owner.getName()) ||
+                    (tileY < this->board.size()-1 && tileX < this->board[tileY-1].size() && this->board[tileY+1][tileX].getEdge(EdgePosition::EDGE_TOP_RIGHT).getOwner()->getName() == owner.getName()))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_BOTTOM:
-                if ((tileY < this->board.size()-1 && tileX < this->board[tileY+1].size() && this->board[tileY+1][tileX].getEdge(EdgePosition::EDGE_LEFT).getOwner().getName() == owner.getName()) ||
-                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].getEdge(EdgePosition::EDGE_RIGHT).getOwner().getName() == owner.getName()))
+                if ((tileY < this->board.size()-1 && tileX < this->board[tileY+1].size() && this->board[tileY+1][tileX].getEdge(EdgePosition::EDGE_LEFT).getOwner()->getName() == owner.getName()) ||
+                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].getEdge(EdgePosition::EDGE_RIGHT).getOwner()->getName() == owner.getName()))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_BOTTOM_LEFT:
-                if ((tileX > 0 && this->board[tileY][tileX-1].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT).getOwner().getName() == owner.getName()) ||
-                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].getEdge(EdgePosition::EDGE_TOP_LEFT).getOwner().getName() == owner.getName()))
+                if ((tileX > 0 && this->board[tileY][tileX-1].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT).getOwner()->getName() == owner.getName()) ||
+                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].getEdge(EdgePosition::EDGE_TOP_LEFT).getOwner()->getName() == owner.getName()))
                 {
                     return 1;
                 }
@@ -250,23 +245,26 @@ namespace ariel {
         // col = 0;
         // row++;
 
-        size_t boardSize[] = {3, 4, 5, 4, 3};
-        size_t padding[5] = {0, 5, 10, 5, 0};
+    size_t boardSize[] = {3, 4, 5, 4, 3};
+    size_t padding[5] = {0, 5, 10, 5, 0};
     size_t numberOfRows = sizeof(boardSize) / sizeof(boardSize[0]);
-    size_t vertexCounter = 0;
     
     for (size_t row = 0; row < numberOfRows; ++row) {
         // Print the top vertices
         if (row == 0){
-                    std::cout << std::setw(30 - padding[row]); // Adjust leading spaces
-        for (size_t col = 0; col < boardSize[row]; ++col) {
-            std::cout << row << col << VERTEX_TOP;
-            if (col < boardSize[row] - 1) {
-                std::cout << std::setw(10);
+            std::cout << std::setw(30 - padding[row]); // Adjust leading spaces
+            for (size_t col = 0; col < boardSize[row]; ++col) {
+                if (board[row][col].getVertex(VertexPosition::VERTEX_TOP).getOwner() != NULL){
+                    Buildable& buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP);
+                    std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << buildable << "\033[0m";
+                } else {
+                    std::cout << row << col << VERTEX_TOP;
+                }
+                if (col < boardSize[row] - 1) {
+                    std::cout << std::setw(10);
+                }
             }
-        }
-        std::cout << std::endl;
-
+            std::cout << std::endl;
         }
 
         // Print the top slashes and spaces between hexagons
@@ -289,7 +287,12 @@ namespace ariel {
         // Print the middle vertices
         std::cout << std::setw(24 - padding[row]); // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
-            std::cout << row << col << VERTEX_TOP_LEFT;
+            if (board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT).getOwner() != NULL){
+                Buildable& buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT);
+                std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << buildable << "\033[0m";
+            } else {
+                std::cout << row << col << VERTEX_TOP_LEFT;
+            }
             if (col < boardSize[row]) {
                 std::cout << std::setw(10);
             }
@@ -307,7 +310,12 @@ namespace ariel {
         // Print the bottom vertices
         std::cout << std::setw(24 - padding[row]); // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
-            std::cout << row << col << VERTEX_BOTTOM_LEFT;
+            if (board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT).getOwner() != NULL){
+                Buildable& buildable = board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT);
+                std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << buildable << "\033[0m";
+            } else {
+                std::cout << row << col << VERTEX_BOTTOM_LEFT;
+            }
             if (col < boardSize[row]) {
                 std::cout << std::setw(10);
             }
@@ -324,7 +332,6 @@ namespace ariel {
             std::cout << std::endl;
         }
 
-        vertexCounter++;
     }
 
     // print bottom vertice bottom row

@@ -28,38 +28,53 @@ int main()
     Board b = catan.getBoard();
     catan.getBoard().printBoard();
     size_t choice = 0;
-    for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
-        Player& currPlayer = catan.getCurrentPlayer();
-        cout << "Player " << currPlayer.getName() << " turn" << endl;
-        cout << "Choose a vertex to place a settlement" << endl;
-        int status = -1;
-        do {
-            cin >> choice;
-            while (choice < 0){
-                cout << "Invalid choice" << endl;
+    for (int i = 0; i < 2; i++){        // 2 settlements and 2 roads for each player
+        for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
+            Player& currPlayer = catan.getCurrentPlayer();
+            cout << "Player " << currPlayer.getName() << " turn" << endl;
+            cout << "Choose a vertex to place a settlement" << endl;
+            int status = -1;
+            do {
                 cin >> choice;
-            }
-            status = currPlayer.placeSettlement(choice, catan);
-            if (status == -1){
-                cout << "Please choose another" << endl;
-            }
-        } while (status == -1);
+                while (choice < 0){
+                    cout << "Invalid choice" << endl;
+                    cin >> choice;
+                }
+                try {
+                    status = currPlayer.placeSettlement(choice, catan);
+                } catch (const std::invalid_argument& e){
+                    cout << e.what() << endl;
+                    status = -1;
+                }
+                cout << "Status: " << status << endl; // "0" means "success", "-1" means "failure
+                if (status == -1){
+                    cout << "Please choose another" << endl;
+                }
+            } while (status == -1);
 
-        cout << "Choose an edge to place a road" << endl;
-        do {
-            cin >> choice;
-            while (choice < 0){
-                cout << "Invalid choice" << endl;
+            cout << "Choose an edge to place a road" << endl;
+            do {
                 cin >> choice;
-            }
-            status = currPlayer.placeRoad(choice, catan);
-            if (status == -1){
-                cout << "Please choose another" << endl;
-            }
-        } while (status == -1);
-        currPlayer.endTurn(catan);
+                while (choice < 0){
+                    cout << "Invalid choice" << endl;
+                    cin >> choice;
+                }
+                try {
+                    status = currPlayer.placeRoad(choice, catan);
+                } catch (const std::invalid_argument& e){
+                    cout << e.what() << endl;
+                    status = -1;
+                }
+                if (status == -1){
+                    cout << "Please choose another" << endl;
+                }
+            } while (status == -1);
+            currPlayer.endTurn(catan);
+            catan.getBoard().printBoard();
+        }
     }
 
+    // main game loop
     while (true)
     {
         catan.getBoard().printBoard();
@@ -88,7 +103,12 @@ int main()
                         cout << "Invalid choice" << endl;
                         cin >> choice;
                     }
-                    status = currPlayer.placeSettlement(choice, catan);
+                    try {
+                        status = currPlayer.placeSettlement(choice, catan);
+                    } catch (const std::invalid_argument& e){
+                        cout << e.what() << endl;
+                        status = -1;
+                    }
                     if (status == -1){
                         cout << "Please choose another" << endl;
                     }
@@ -103,7 +123,12 @@ int main()
                         cout << "Invalid choice" << endl;
                         cin >> choice;
                     }
-                    status = currPlayer.placeRoad(choice, catan);
+                    try {
+                        status = currPlayer.placeRoad(choice, catan);
+                    } catch (const std::invalid_argument& e){
+                        cout << e.what() << endl;
+                        status = -1;
+                    }
                     if (status == -1){
                         cout << "Please choose another" << endl;
                     }

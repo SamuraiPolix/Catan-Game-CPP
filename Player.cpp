@@ -5,6 +5,11 @@
 using std::vector, std::string, std::map, std::cout, std::endl;
 
 namespace ariel{
+    // static vars
+    Color Player::colors[3] = {Color::Red, Color::Green, Color::Blue};
+    int Player::playerCounter = 0;
+
+    // functions
     Player::Player(string name) {
         this->name = name;
         // resources = {};
@@ -14,22 +19,27 @@ namespace ariel{
         currTurn = false;
         developmentCards = {};
         victoryPoints = 0;
+        color = colors[playerCounter++];
     }
     int Player::placeSettlement(size_t index, Catan& catan){
         // make sure its the player's turn
         if (currTurn == false){
             throw std::invalid_argument("Player tried to place a settlement when it's not his turn");
         }
-        // make sure player has enough resources
-        if (resources[ResourceType::Wood-1] < 1 || resources[ResourceType::Brick-1] < 1 || resources[ResourceType::Sheep-1] < 1 || resources[ResourceType::Wheat-1] < 1){
-            throw std::invalid_argument("Player doesn't have enough resources (1 Wood, 1 Brick, 1 Sheep, 1 Wheat) to place a settlement\n");
+        // make sure player has enough resources, if its not the first 2 settlements
+        if (numOfSettlements() >= 2){
+            if (resources[ResourceType::Wood-1] < 1 || resources[ResourceType::Brick-1] < 1 || resources[ResourceType::Sheep-1] < 1 || resources[ResourceType::Wheat-1] < 1){
+                throw std::invalid_argument("Player doesn't have enough resources (1 Wood, 1 Brick, 1 Sheep, 1 Wheat) to place a settlement\n");
+            }
         }
         // place settlement
         int status = catan.placeSettlement(*this, index);
 
         if(status == 0){
             settlements.push_back(index);
-            // building was successful, remove resources
+        }
+
+        if (numOfSettlements() >= 2){       // player pays for settlements after the first 2
             resources[ResourceType::Wood-1]--;
             resources[ResourceType::Brick-1]--;
             resources[ResourceType::Sheep-1]--;
@@ -37,8 +47,8 @@ namespace ariel{
         }
         return status;
     }
-    string Player::getName(){
-        return name;
+    string Player::getName(){   
+        return "\033[" + std::to_string(color) + "m" + name + "\033[0m";
     }
     int Player::numOfSettlements(){
         return settlements.size();
@@ -53,8 +63,8 @@ namespace ariel{
         //     throw std::invalid_argument("Player doesn't have enough resources (1 Wood, 1 Brick) to place a road\n");
         // }
         // // place road
-        int status = catan.placeRoad(*this, index);
-
+        // int status = catan.placeRoad(*this, index);
+    int status = 1;
         // if(status == 0){
         //     roads.push_back(index);
         //     roadsNum.push_back(1);
@@ -150,5 +160,9 @@ namespace ariel{
 
     vector<Tile>& Player::getTiles(){
         return tiles;
+    }
+
+    Color Player::getColor(){
+        return color;
     }
 }
