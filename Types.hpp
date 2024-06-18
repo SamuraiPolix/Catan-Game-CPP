@@ -1,5 +1,7 @@
-#pragma once
+#ifndef TYPES_HPP
+#define TYPES_HPP
 #include <cstdlib>  // Include for size_t definition
+#include <string>
 
 
 namespace ariel{
@@ -19,13 +21,16 @@ namespace ariel{
         Desert = 7      // not a resoure - tile type
     };
 
-        enum VertexPosition {
+    std::string getResourceName(ResourceType resource);
+
+    enum VertexPosition {
         VERTEX_TOP_LEFT = 0,
         VERTEX_TOP = 1,
         VERTEX_TOP_RIGHT = 2,
         VERTEX_BOTTOM_RIGHT = 3,
         VERTEX_BOTTOM = 4,
-        VERTEX_BOTTOM_LEFT = 5
+        VERTEX_BOTTOM_LEFT = 5,
+        NUM_OF_VERTICES = 6
     };
 
     enum EdgePosition {
@@ -34,33 +39,50 @@ namespace ariel{
         EDGE_RIGHT = 2,
         EDGE_BOTTOM_RIGHT = 3,
         EDGE_BOTTOM_LEFT = 4,
-        EDGE_LEFT = 5
+        EDGE_LEFT = 5,
+        NUM_OF_EDGES = 6
     };
 
     // edgePosition + - operators override
     inline EdgePosition operator+(EdgePosition pos, int num){
-        return (EdgePosition)(((int)(pos + num)) % 6);
+        return (EdgePosition)((((int)pos + num)) % (int)NUM_OF_EDGES);
     }
     inline EdgePosition operator+(int num, EdgePosition pos){
-        return (EdgePosition)(((int)(pos + num)) % 6);
+        return (EdgePosition)((((int)pos + num)) % (int)NUM_OF_EDGES);
     }
     inline EdgePosition operator-(EdgePosition pos, int num){
-        return (EdgePosition)(((int)(pos-num)) % 6);
+        int result = ((((int)pos - num)) % (int)NUM_OF_EDGES);
+        if (result < 0){
+            result += (int)NUM_OF_EDGES;
+        }
+        return (EdgePosition)result;
     }
     inline EdgePosition operator-(int num, EdgePosition pos){
-        return (EdgePosition)(((int)(num - pos)) % 6);
+        int result = (((num - (int)pos)) % (int)NUM_OF_EDGES);
+        if (result < 0){
+            result += (int)NUM_OF_EDGES;
+        }
+        return (EdgePosition)result;
     }
     inline VertexPosition operator+(VertexPosition pos, int num){
-        return (VertexPosition)(((int)(pos + num)) % 6);
+        return (VertexPosition)((((int)pos + num)) % (int)NUM_OF_VERTICES);
     }
     inline VertexPosition operator+(int num, VertexPosition pos){
-        return (VertexPosition)(((int)(pos + num)) % 6);
+        return (VertexPosition)((((int)pos + num)) % (int)NUM_OF_VERTICES);
     }
     inline VertexPosition operator-(VertexPosition pos, int num){
-        return (VertexPosition)(((int)(pos - num)) % 6);
+        int result = ((((int)pos - num)) % (int)NUM_OF_VERTICES);
+        if (result < 0){
+            result += (int)NUM_OF_VERTICES;
+        }
+        return (VertexPosition)result;
     }
     inline VertexPosition operator-(int num, VertexPosition pos){
-        return (VertexPosition)(((int)(num - pos)) % 6);
+        int result = (((num - (int)pos)) % (int)NUM_OF_VERTICES);
+        if (result < 0){
+            result += (int)NUM_OF_VERTICES;
+        }
+        return (VertexPosition)result;
     }
 
 
@@ -89,3 +111,4 @@ namespace ariel{
     //     return (VertexPosition)(((size_t)(num - pos)) % 6);
     // }
 }
+#endif      // TYPES_HPP

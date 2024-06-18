@@ -4,8 +4,8 @@ CXX=clang
 CXXFLAGS=-std=c++17 -Werror -Wsign-conversion -g
 VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 
-SOURCES=Catan.cpp Buildable.cpp DevelopmentCard.cpp Board.cpp Player.cpp Tile.cpp Catan.cpp
-CODE_SOURCES=Catan.cpp Buildable.cpp DevelopmentCard.cpp Board.cpp Player.cpp Tile.cpp Catan.cpp
+SOURCES=Catan.cpp Buildable.cpp DevelopmentCard.cpp Board.cpp Player.cpp Tile.cpp Catan.cpp Types.cpp
+CODE_SOURCES=Catan.cpp Buildable.cpp DevelopmentCard.cpp Board.cpp Player.cpp Tile.cpp Catan.cpp Types.cpp
 OBJECTS=$(subst .cpp,.o,$(SOURCES))
 
 # run: catan
