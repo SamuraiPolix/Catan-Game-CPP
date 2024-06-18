@@ -55,8 +55,22 @@ namespace ariel{
     Buildable& Tile::getEdge(EdgePosition pos){
         return hexEdges[pos];
     }
+    bool Tile::isVertexOwner(VertexPosition pos, Player& player){
+        if (hexVertices[pos].getOwner() != NULL)
+            return hexVertices[pos].getOwner()->getName() == player.getName();
+        else
+            return false;
+    }
+    bool Tile::isEdgeOwner(EdgePosition pos, Player& player){
+        if (hexEdges[pos].getOwner() != NULL)
+            return hexEdges[pos].getOwner()->getName() == player.getName();
+        else
+            return false;
+    }
     int Tile::setSettlementAt(VertexPosition pos, Player& player){
         std::cout << "TYPE: " << hexVertices[pos].getType() << "\n";
+        std::cout << "Land: " << this->getResource() << "\n";
+        std::cout << "NUM: " << this->getNumber() << "\n";
         if (hexVertices[pos].getType() == BuildableTypes::None){
             hexVertices[pos] = Buildable(BuildableTypes::Settlement, player, pos);
 

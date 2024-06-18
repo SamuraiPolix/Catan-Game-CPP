@@ -10,7 +10,7 @@
 using std::vector, std::string, std::cout, std::endl, std::shuffle, std::default_random_engine, std::begin, std::end;
 
 namespace ariel {
-    Board::Board() : board(5, std::vector<Tile>(3)) {
+    Board::Board() {
         // generate random board - set tiles with resources and numbers
         // first row has 3 tiles, second row has 4 tiles, third row has 5 tiles, fourth row has 4 tiles, fifth row has 3 tiles
 
@@ -22,7 +22,8 @@ namespace ariel {
             ResourceType::Sheep, ResourceType::Sheep, ResourceType::Sheep, ResourceType::Sheep,     // 4 Sheeps
             ResourceType::Wheat, ResourceType::Wheat, ResourceType::Wheat, ResourceType::Wheat,     // 4 Wheats
             ResourceType::Brick, ResourceType::Brick, ResourceType::Brick,       // 3 Bricks
-            ResourceType::Ore, ResourceType::Ore, ResourceType::Ore,         // 3 Ores            ResourceType::DESERT
+            ResourceType::Ore, ResourceType::Ore, ResourceType::Ore,         // 3 Ores
+            ResourceType::Desert
         };
 
         //     1x"2"    2x"3"    2x"4"    2x"5"    2x"6"    2x"8"    2x"9"    2x"10"    2x"11"    1x"12"
@@ -51,8 +52,10 @@ namespace ariel {
             for (size_t col = 0; col < rowSize; col++){
                 // uses a number only if the land is not a desert
                 if (allLands[landIndex] == ResourceType::Desert){
+                    cout << "Desert at " << row << ", " << col << endl;
                     tilesRow.push_back(Tile(row, col, (ResourceType)allLands[landIndex], (size_t)0));
                 } else {
+                    cout << "Land: " << allLands[landIndex] << " Number: " << allNumbers[numberIndex] << " at " << row << ", " << col << endl;
                     tilesRow.push_back(Tile(row, col, (ResourceType)allLands[landIndex], (size_t)allNumbers[numberIndex]));
                     numberIndex++;
                 }
@@ -78,8 +81,8 @@ namespace ariel {
         EdgePosition tilePos;
         VertexPosition tilePos2;
         if (indexToTilePos(index, tileX, tileY, tilePos2) == -1){
-            cout << "Invalid index" << endl;
-            return -1;
+            throw std::invalid_argument("Failed to place road at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos2)
+            + "\nInvalid index\n");
         }
         tilePos = (EdgePosition)tilePos2;
         return placeRoad(owner, tileX, tileY, tilePos);
@@ -109,7 +112,7 @@ namespace ariel {
             throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
             + "\nVertex is already taken\n");
         }
-        this->board[tileY][tileX].setSettlementAt(tilePos, owner);
+        // this->board[tileY][tileX].setSettlementAt(tilePos, owner);
         return 1;       // success
     }
 
@@ -124,7 +127,7 @@ namespace ariel {
             throw std::invalid_argument("Failed to place road at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
             + "\nEdge is already taken\n");
         }
-        this->board[tileY][tileX].setRoadAt(tilePos, owner);
+        // this->board[tileY][tileX].setRoadAt(tilePos, owner);
         return 1;       // success
     }
 
@@ -134,8 +137,8 @@ namespace ariel {
             return 1;       // road near
         }
         // check if there is a building near on selected tile (check to the left and right of the vertex) - road was already checked
-        if (this->board[tileY][tileX].getVertex((VertexPosition)tilePos).getOwner()->getName() == owner.getName() ||
-            this->board[tileY][tileX].getVertex((VertexPosition)tilePos+1).getOwner()->getName() == owner.getName())
+        if (this->board[tileY][tileX].isVertexOwner((VertexPosition)tilePos, owner) ||
+            this->board[tileY][tileX].isVertexOwner((VertexPosition)tilePos+1, owner))
         {
             return 1;       
         }
@@ -144,51 +147,53 @@ namespace ariel {
 
     int Board::hasRoadNear(Player& owner, size_t tileX, size_t tileY, VertexPosition tilePos){
         // check if there is a road near on selected tile (check to the left and right of the vertex)
-        if (this->board[tileY][tileX].getEdge((EdgePosition)tilePos-1).getOwner()->getName() == owner.getName() ||
-            this->board[tileY][tileX].getEdge((EdgePosition)tilePos).getOwner()->getName() == owner.getName())
+        VertexPosition vp = (tilePos-1);
+        EdgePosition ep = (EdgePosition)vp;
+        if (this->board[tileY][tileX].isEdgeOwner((EdgePosition)(tilePos-1), owner) ||
+            this->board[tileY][tileX].isEdgeOwner((EdgePosition)tilePos, owner))
         {
             return 1;       
         }
         // if not found on current tile, check the neighbor according to selected tilePos
         switch (tilePos){
             case VertexPosition::VERTEX_TOP_LEFT:
-                if ((tileX > 0 && this->board[tileY][tileX-1].getEdge(EdgePosition::EDGE_TOP_RIGHT).getOwner()->getName() == owner.getName()) ||
-                    (tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT).getOwner()->getName() == owner.getName()))
+                if (tileX > 0 && this->board[tileY][tileX-1].isEdgeOwner(EdgePosition::EDGE_TOP_RIGHT, owner) ||
+                    tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].isEdgeOwner(EdgePosition::EDGE_BOTTOM_LEFT, owner))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_TOP:
-                if ((tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].getEdge(EdgePosition::EDGE_RIGHT).getOwner()->getName() == owner.getName()) ||
-                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].getEdge(EdgePosition::EDGE_LEFT).getOwner()->getName() == owner.getName()))
+                if ((tileY > 0 && tileX > 0 && this->board[tileY-1][tileX-1].isEdgeOwner(EdgePosition::EDGE_RIGHT, owner)) ||
+                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].isEdgeOwner(EdgePosition::EDGE_LEFT, owner)))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_TOP_RIGHT:
-                if ((tileX < this->board[tileY].size() && this->board[tileY][tileX+1].getEdge(EdgePosition::EDGE_TOP_LEFT).getOwner()->getName() == owner.getName()) ||
-                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT).getOwner()->getName() == owner.getName()))
+                if ((tileX < this->board[tileY].size() && this->board[tileY][tileX+1].isEdgeOwner(EdgePosition::EDGE_TOP_LEFT, owner) ||
+                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].isEdgeOwner(EdgePosition::EDGE_BOTTOM_RIGHT, owner))))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_BOTTOM_RIGHT:
-                if ((tileX < this->board[tileY].size()-1 && this->board[tileY][tileX+1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT).getOwner()->getName() == owner.getName()) ||
-                    (tileY < this->board.size()-1 && tileX < this->board[tileY-1].size() && this->board[tileY+1][tileX].getEdge(EdgePosition::EDGE_TOP_RIGHT).getOwner()->getName() == owner.getName()))
+                if ((tileX < this->board[tileY].size()-1 && this->board[tileY][tileX+1].isEdgeOwner(EdgePosition::EDGE_BOTTOM_LEFT, owner) ||
+                    (tileY < this->board.size()-1 && tileX < this->board[tileY-1].size() && this->board[tileY+1][tileX].isEdgeOwner(EdgePosition::EDGE_TOP_RIGHT, owner))))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_BOTTOM:
-                if ((tileY < this->board.size()-1 && tileX < this->board[tileY+1].size() && this->board[tileY+1][tileX].getEdge(EdgePosition::EDGE_LEFT).getOwner()->getName() == owner.getName()) ||
-                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].getEdge(EdgePosition::EDGE_RIGHT).getOwner()->getName() == owner.getName()))
+                if ((tileY < this->board.size()-1 && tileX < this->board[tileY+1].size() && this->board[tileY+1][tileX].isEdgeOwner(EdgePosition::EDGE_LEFT, owner) ||
+                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].isEdgeOwner(EdgePosition::EDGE_RIGHT, owner))))
                 {
                     return 1;
                 }
                 break;
             case VertexPosition::VERTEX_BOTTOM_LEFT:
-                if ((tileX > 0 && this->board[tileY][tileX-1].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT).getOwner()->getName() == owner.getName()) ||
-                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].getEdge(EdgePosition::EDGE_TOP_LEFT).getOwner()->getName() == owner.getName()))
+                if ((tileX > 0 && this->board[tileY][tileX-1].isEdgeOwner(EdgePosition::EDGE_BOTTOM_RIGHT, owner) ||
+                    (tileY < this->board.size()-1 && tileX > 0 && this->board[tileY+1][tileX-1].isEdgeOwner(EdgePosition::EDGE_TOP_LEFT, owner))))
                 {
                     return 1;
                 }
@@ -244,7 +249,7 @@ namespace ariel {
 
         // col = 0;
         // row++;
-
+    
     size_t boardSize[] = {3, 4, 5, 4, 3};
     size_t padding[5] = {0, 5, 10, 5, 0};
     size_t numberOfRows = sizeof(boardSize) / sizeof(boardSize[0]);
@@ -271,14 +276,38 @@ namespace ariel {
         if (row < 3) {
             std::cout << std::setw(29 - padding[row]); // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
-                    std::cout << "/" << std::setw(5) << "\\" << std::setw(7);
+                // if there is a road on this, color it with players color
+                if (board[row][col].getEdge(EdgePosition::EDGE_TOP_LEFT).getOwner() != NULL){
+                    Buildable& buildable = board[row][col].getEdge(EdgePosition::EDGE_TOP_LEFT);
+                    std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << "/" << "\033[0m";
+                } else {
+                    std::cout << "/";
+                }
+                if (board[row][col].getEdge(EdgePosition::EDGE_TOP_RIGHT).getOwner() != NULL){
+                    Buildable& buildable = board[row][col].getEdge(EdgePosition::EDGE_TOP_RIGHT);
+                    std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << std::setw(5) << "\\" << "\033[0m";
+                } else {
+                    std::cout << std::setw(5) << "\\";
+                }
+                std::cout << std::setw(7);
             }
             std::cout << std::endl;
         }
         else {
             std::cout << std::setw(23 - padding[row]); // Adjust leading spaces
             for (size_t col = 0; col <= boardSize[row]; ++col) {
-                    std::cout << "\\" << std::setw(5) << "/" << std::setw(7);
+                if (board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT).getOwner() != NULL){
+                    Buildable& buildable = board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT);
+                    std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << "\\" << "\033[0m";
+                } else {
+                    std::cout << "\\";
+                }
+                if (board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT).getOwner() != NULL){
+                    Buildable& buildable = board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
+                    std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << std::setw(5) << "/" << "\033[0m";
+                } else {
+                    std::cout << std::setw(5) << "/" << std::setw(7);
+                }
             }
             std::cout << std::endl;
         }
@@ -303,7 +332,13 @@ namespace ariel {
         // Print the vertical bars
         std::cout << std::setw(25 - padding[row]); // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
-            std::cout << "|" << std::setw(12);
+            if (board[row][col].getEdge(EdgePosition::EDGE_LEFT).getOwner() != NULL){
+                Buildable& buildable = board[row][col].getEdge(EdgePosition::EDGE_LEFT);
+                std::cout << "\033["<< buildable.getOwner()->getColor() << "m" << "|" << "\033[0m";
+            } else {
+                std::cout << "|";
+            }
+            std::cout << std::setw(6) << getResourceName(board[row][col].getResource()) << "(" << board[row][col].getNumber() << ")" << std::setw(3);
         }
         std::cout << "|" << std::endl;
 

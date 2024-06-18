@@ -25,7 +25,7 @@ namespace ariel {
 
         public:
             Tile() : x(0), y(0), resource(ResourceType::Desert), diceNumber(0), hasRobber(false) {initHexVertices(); initHexEdges();};
-            Tile(size_t x, size_t y, ResourceType resource, size_t number) : x(x), y(y), resource(resource), diceNumber(number), hasRobber(false) {initHexVertices(); initHexEdges();};
+            Tile(size_t _x, size_t _y, ResourceType _resource, size_t _number) : x(_x), y(_y), resource(_resource), diceNumber(_number), hasRobber(false) {initHexVertices(); initHexEdges();};
             void setResource(ResourceType resource);
             void setNumber(size_t number);
             void setRobber(bool hasRobber);
@@ -56,6 +56,8 @@ namespace ariel {
             vector<Player> getPlayers() const;
             Buildable& getVertex(VertexPosition pos);
             Buildable& getEdge(EdgePosition pos);
+            bool isVertexOwner(VertexPosition pos, Player& player);
+            bool isEdgeOwner(EdgePosition pos, Player& player);
             size_t getX() const {return x;};
             size_t getY() const {return y;};
     };

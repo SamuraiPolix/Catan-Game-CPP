@@ -53,25 +53,30 @@ namespace ariel{
     int Player::numOfSettlements(){
         return settlements.size();
     }
+    int Player::numOfRoads(){
+        return roads.size();
+    }
     int Player::placeRoad(size_t index, Catan& catan){
-        // // make sure its the player's turn
-        // if (currTurn == false){
-        //     throw std::invalid_argument("Player tried to place a road when it's not his turn");
-        // }
-        // // make sure player has enough resources
-        // if (resources[ResourceType::Wood-1] < 1 || resources[ResourceType::Brick-1] < 1){
-        //     throw std::invalid_argument("Player doesn't have enough resources (1 Wood, 1 Brick) to place a road\n");
-        // }
-        // // place road
-        // int status = catan.placeRoad(*this, index);
-    int status = 1;
-        // if(status == 0){
-        //     roads.push_back(index);
-        //     roadsNum.push_back(1);
-        //     // building was successful, remove resources
-        //     resources[ResourceType::Wood-1]--;
-        //     resources[ResourceType::Brick-1]--;
-        // }
+        // make sure its the player's turn
+        if (currTurn == false){
+            throw std::invalid_argument("Player tried to place a road when it's not his turn");
+        }
+        // make sure player has enough resources, if its not the first 2 settlements
+        if (numOfRoads() >= 2){
+            if (resources[ResourceType::Wood-1] < 1 || resources[ResourceType::Brick-1] < 1){
+                throw std::invalid_argument("Player doesn't have enough resources (1 Wood, 1 Brick) to place a road\n");
+            }
+        }
+        // place road
+        int status = catan.placeRoad(*this, index);
+        if(status == 0){
+            roads.push_back(index);
+        }
+
+        if (numOfRoads() >= 2){       // player pays for settlements after the first 2
+            resources[ResourceType::Wood-1]--;
+            resources[ResourceType::Brick-1]--;
+        }
         return status;
     }
     void Player::buyDevelopmentCard(Catan& catan){
