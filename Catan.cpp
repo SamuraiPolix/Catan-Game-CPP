@@ -17,6 +17,15 @@ namespace ariel {
 
         initCards();
     }
+    Catan::~Catan(){
+        delete board;
+        for (size_t i = 0; i < players.size(); i++){
+            delete players[i];
+        }
+        // for (size_t i = 0; i < developmentCards.size(); i++){
+        //     delete developmentCards[i];
+        // }
+    }
 
     // this functions generates a random player and prints its name
     void Catan::ChooseStartingPlayer(){
@@ -33,12 +42,6 @@ namespace ariel {
 
     Board& Catan::getBoard(){
         return *this->board;
-    }
-    int Catan::placeSettlement(Player& owner, size_t index){
-        return board->placeSettlement(owner, index);
-    }
-    int Catan::placeRoad(Player& owner, size_t index){
-        return board->placeRoad(owner, index);
     }
     void Catan::nextPlayer(){
         this->currPlayer = (this->currPlayer + 1) % 3;

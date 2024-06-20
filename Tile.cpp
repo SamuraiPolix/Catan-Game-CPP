@@ -6,15 +6,22 @@ namespace ariel{
         os << tile.resource << " (" << tile.diceNumber << ") ";
         return os;
     }
-    void Tile::initHexVertices(){
-        for (size_t i = 0; i < 6; i++){
-            hexVertices[i] = Buildable();
-        }
+    // void Tile::initHexVertices(){
+    //     for (size_t i = 0; i < 6; i++){
+    //         hexVertices[i] = Buildable();
+    //     }
+    // }
+    // void Tile::initHexEdges(){
+    //     for (size_t i = 0; i < 6; i++){
+    //         hexEdges[i] = Buildable();
+    //     }
+    // }
+
+    void Tile::setVertexAtPos(size_t pos, Buildable* buildable){
+        hexVertices[pos] = buildable;
     }
-    void Tile::initHexEdges(){
-        for (size_t i = 0; i < 6; i++){
-            hexEdges[i] = Buildable();
-        }
+    void Tile::setEdgeAtPos(size_t pos, Buildable* buildable){
+        hexEdges[pos] = buildable;
     }
     void Tile::setResource(ResourceType resource){
         this->resource = resource;
@@ -35,7 +42,6 @@ namespace ariel{
                 break;      // found the player, no need to continue
             }
         }
-    
     }
     ResourceType Tile::getResource() const{
         return this->resource;
@@ -49,30 +55,30 @@ namespace ariel{
     vector<Player> Tile::getPlayers() const{
         return this->players;
     }
-    Buildable& Tile::getVertex(VertexPosition pos){
+    Buildable* Tile::getVertex(VertexPosition pos){
         return hexVertices[pos];
     }
-    Buildable& Tile::getEdge(EdgePosition pos){
+    Buildable* Tile::getEdge(EdgePosition pos){
         return hexEdges[pos];
     }
     bool Tile::isVertexOwner(VertexPosition pos, Player& player){
-        if (hexVertices[pos].getOwner() != NULL)
-            return hexVertices[pos].getOwner()->getName() == player.getName();
+        if (hexVertices[pos]->getOwner() != NULL)
+            return hexVertices[pos]->getOwner()->getName() == player.getName();
         else
             return false;
     }
     bool Tile::isEdgeOwner(EdgePosition pos, Player& player){
-        if (hexEdges[pos].getOwner() != NULL)
-            return hexEdges[pos].getOwner()->getName() == player.getName();
+        if (hexEdges[pos]->getOwner() != NULL)
+            return hexEdges[pos]->getOwner()->getName() == player.getName();
         else
             return false;
     }
     int Tile::setSettlementAt(VertexPosition pos, Player& player){
-        std::cout << "TYPE: " << hexVertices[pos].getType() << "\n";
+        std::cout << "TYPE: " << hexVertices[pos]->getType() << "\n";
         std::cout << "Land: " << this->getResource() << "\n";
         std::cout << "NUM: " << this->getNumber() << "\n";
-        if (hexVertices[pos].getType() == BuildableTypes::None){
-            hexVertices[pos] = Buildable(BuildableTypes::Settlement, player, pos);
+        if (hexVertices[pos]->getType() == BuildableTypes::None){
+            hexVertices[pos]->setSettlement(player);
 
             // add player to list if is not in it already
             if (this->players.size() == 0){
@@ -93,8 +99,8 @@ namespace ariel{
     }
 
     int Tile::setRoadAt(EdgePosition pos, Player& player){
-        if (hexEdges[pos].getType() == BuildableTypes::None){
-            hexEdges[pos] = Buildable(BuildableTypes::Road, player, pos);
+        if (hexEdges[pos]->getType() == BuildableTypes::None){
+            hexEdges[pos]->setRoad(player);
             return 0;
         }
         return -1;

@@ -1,4 +1,5 @@
 #pragma once
+#include "Board.hpp"
 #include "Catan.hpp"
 #include <string>
 #include <vector>
@@ -7,10 +8,12 @@
 #include "Buildable.hpp"
 #include "DevelopmentCard.hpp"
 #include "Tile.hpp"
+#include <tuple>
 
-using std::vector, std::string, std::map;
+using std::vector, std::string, std::map, std::tuple;
 
 namespace ariel{
+    class Board;
     class Catan;
     class Player
     {
@@ -20,7 +23,7 @@ namespace ariel{
         private:        // by default
             string name;
             int resources[5];       // holds the amount of each resource (index i := ResourceType(i+1))
-            vector<size_t> roads;
+            vector<tuple<size_t, size_t>> roads;
             vector<size_t> settlements;     // holds board index of all settlements
             vector<Tile> tiles;     // holds the tiles that the player has settlements on
             bool currTurn;
@@ -31,8 +34,8 @@ namespace ariel{
 
         public:
             Player(string name);
-            int placeSettlement(size_t index, Catan& catan);
-            int placeRoad(size_t index, Catan& catan);
+            int placeSettlement(size_t index, Board& board);
+            int placeRoad(size_t vertex1, size_t vertex2, Board& board);
             void buyDevelopmentCard(Catan& catan);
             void addDevelopmentCard(DevelopmentCard& card);
             void printPoints();

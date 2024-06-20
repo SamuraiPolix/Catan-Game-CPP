@@ -16,16 +16,16 @@ namespace ariel {
             size_t diceNumber;      // number on tile that gives resources to players when rolled
             bool hasRobber;         // if there is a robber on the tile (no resources are given when rolled)
             vector<Player> players;     // the players that have a settlement or city on the tile (they get resources when the dice number matches the tile)
-            Buildable hexVertices[6];       // the vertices of the tile - can be settlements, cities or nothing
-            Buildable hexEdges[6];      // The edges of the tile - can be roads or nothing
+            Buildable* hexVertices[6];       // the vertices of the tile - can be settlements, cities or nothing
+            Buildable* hexEdges[6];      // The edges of the tile - can be roads or nothing
             size_t x, y;        // the position of the tile on the board
         // private methods
-            void initHexVertices();
-            void initHexEdges();
+            // void initHexVertices();
+            // void initHexEdges();
 
         public:
-            Tile() : x(0), y(0), resource(ResourceType::Desert), diceNumber(0), hasRobber(false) {initHexVertices(); initHexEdges();};
-            Tile(size_t _x, size_t _y, ResourceType _resource, size_t _number) : x(_x), y(_y), resource(_resource), diceNumber(_number), hasRobber(false) {initHexVertices(); initHexEdges();};
+            Tile() : x(0), y(0), resource(ResourceType::Desert), diceNumber(0), hasRobber(false) {};
+            Tile(size_t _x, size_t _y, ResourceType _resource, size_t _number) : x(_x), y(_y), resource(_resource), diceNumber(_number), hasRobber(false) {};
             void setResource(ResourceType resource);
             void setNumber(size_t number);
             void setRobber(bool hasRobber);
@@ -33,6 +33,9 @@ namespace ariel {
             void removePlayer(Player& player);
 
             friend ostream& operator<<(ostream& os, const Tile& tile);
+
+            void setVertexAtPos(size_t pos, Buildable* buildable);
+            void setEdgeAtPos(size_t pos, Buildable* buildable);
 
             /*
              * Sets the vertex at the given position to a settlement.
@@ -54,8 +57,8 @@ namespace ariel {
             size_t getNumber() const;
             bool getRobber() const;
             vector<Player> getPlayers() const;
-            Buildable& getVertex(VertexPosition pos);
-            Buildable& getEdge(EdgePosition pos);
+            Buildable* getVertex(VertexPosition pos);
+            Buildable* getEdge(EdgePosition pos);
             bool isVertexOwner(VertexPosition pos, Player& player);
             bool isEdgeOwner(EdgePosition pos, Player& player);
             size_t getX() const {return x;};

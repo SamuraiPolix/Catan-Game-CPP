@@ -25,7 +25,7 @@ int main()
     // Starting of the game. Every player places two settlements and two roads.
 
     catan.ChooseStartingPlayer();   // should print the name of the starting player
-    Board b = catan.getBoard();
+    Board board = catan.getBoard();
     catan.getBoard().printBoard();
     size_t choice = 0;
     for (int i = 0; i < 2; i++){        // 2 settlements and 2 roads for each player
@@ -41,7 +41,7 @@ int main()
                     cin >> choice;
                 }
                 try {
-                    status = currPlayer.placeSettlement(choice, catan);
+                    status = currPlayer.placeSettlement(choice, board);
                 } catch (const std::invalid_argument& e){
                     cout << e.what() << endl;
                     status = -1;
@@ -52,15 +52,21 @@ int main()
                 }
             } while (status == -1);
 
-            cout << "Choose an edge to place a road" << endl;
+            cout << "Choose an edge to place a road (enter 2 vertex numbers, seperated by a space!)" << endl;
             do {
-                cin >> choice;
-                while (choice < 0){
+                size_t vertex1, vertex2;
+                cin >> vertex1;
+                while (vertex1 < 0){
                     cout << "Invalid choice" << endl;
-                    cin >> choice;
+                    cin >> vertex1;
+                }
+                cin >> vertex2;
+                while (vertex2 < 0){
+                    cout << "Invalid choice" << endl;
+                    cin >> vertex2;
                 }
                 try {
-                    status = currPlayer.placeRoad(choice, catan);
+                    status = currPlayer.placeRoad(vertex1, vertex2, board);
                 } catch (const std::invalid_argument& e){
                     cout << e.what() << endl;
                     status = -1;
@@ -104,7 +110,7 @@ int main()
                         cin >> choice;
                     }
                     try {
-                        status = currPlayer.placeSettlement(choice, catan);
+                        status = currPlayer.placeSettlement(choice, board);
                     } catch (const std::invalid_argument& e){
                         cout << e.what() << endl;
                         status = -1;
@@ -118,13 +124,19 @@ int main()
                 cout << "Choose an edge to place a road" << endl;
                 int status = -1;
                 do {
-                    cin >> choice;
-                    while (choice < 0){
+                    size_t vertex1, vertex2;
+                    cin >> vertex1;
+                    while (vertex1 < 0){
                         cout << "Invalid choice" << endl;
-                        cin >> choice;
+                        cin >> vertex1;
+                    }
+                    cin >> vertex2;
+                    while (vertex2 < 0){
+                        cout << "Invalid choice" << endl;
+                        cin >> vertex2;
                     }
                     try {
-                        status = currPlayer.placeRoad(choice, catan);
+                        status = currPlayer.placeRoad(vertex1, vertex2, board);
                     } catch (const std::invalid_argument& e){
                         cout << e.what() << endl;
                         status = -1;

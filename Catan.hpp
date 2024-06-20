@@ -23,12 +23,11 @@ namespace ariel {
 
     public:
         Catan(Player& p1, Player& p2, Player& p3);
+        ~Catan();
         Player& getCurrentPlayer();
         void ChooseStartingPlayer();
         Board& getBoard();
         int printWinner();
-        int placeSettlement(Player& owner, size_t index);
-        int placeRoad(Player& owner, size_t index);
         void nextPlayer();
         void printPlayersExceptCurrent();
         void addDevelopmentCard(Player& player);
