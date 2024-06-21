@@ -34,8 +34,8 @@ namespace ariel{
 
         public:
             Player(string name);
-            int placeSettlement(size_t index, Board& board);
-            int placeRoad(size_t vertex1, size_t vertex2, Board& board);
+            int placeSettlement(size_t index, Board* board);
+            int placeRoad(size_t vertex1, size_t vertex2, Board* board);
             void buyDevelopmentCard(Catan& catan);
             void addDevelopmentCard(DevelopmentCard& card);
             void printPoints();

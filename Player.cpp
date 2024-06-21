@@ -21,7 +21,7 @@ namespace ariel{
         victoryPoints = 0;
         color = colors[playerCounter++];
     }
-    int Player::placeSettlement(size_t index, Board& board){
+    int Player::placeSettlement(size_t index, Board* board){
         // make sure its the player's turn
         if (currTurn == false){
             throw std::invalid_argument("Player tried to place a settlement when it's not his turn");
@@ -33,7 +33,7 @@ namespace ariel{
             }
         }
         // place settlement
-        int status = board.placeSettlement(*this, index);
+        int status = board->placeSettlement(*this, index);
 
         if(status == 0){
             settlements.push_back(index);
@@ -56,7 +56,7 @@ namespace ariel{
     int Player::numOfRoads(){
         return roads.size();
     }
-    int Player::placeRoad(size_t vertex1, size_t vertex2, Board& board){
+    int Player::placeRoad(size_t vertex1, size_t vertex2, Board* board){
         // make sure its the player's turn
         if (currTurn == false){
             throw std::invalid_argument("Player tried to place a road when it's not his turn");
@@ -68,7 +68,7 @@ namespace ariel{
             }
         }
         // place road
-        int status = board.placeRoad(*this, vertex1, vertex2);
+        int status = board->placeRoad(*this, vertex1, vertex2);
         if(status == 0){
             roads.push_back({vertex1, vertex2});
         }

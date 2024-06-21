@@ -25,8 +25,8 @@ int main()
     // Starting of the game. Every player places two settlements and two roads.
 
     catan.ChooseStartingPlayer();   // should print the name of the starting player
-    Board board = catan.getBoard();
-    catan.getBoard().printBoard();
+    Board* board = catan.getBoard();
+    catan.getBoard()->printBoard();
     size_t choice = 0;
     for (int i = 0; i < 2; i++){        // 2 settlements and 2 roads for each player
         for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
@@ -76,14 +76,14 @@ int main()
                 }
             } while (status == -1);
             currPlayer.endTurn(catan);
-            catan.getBoard().printBoard();
+            catan.getBoard()->printBoard();
         }
     }
 
     // main game loop
     while (true)
     {
-        catan.getBoard().printBoard();
+        catan.getBoard()->printBoard();
         Player& currPlayer = catan.getCurrentPlayer();
         cout << "Player " << currPlayer.getName() << " turn" << endl;
 

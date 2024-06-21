@@ -40,8 +40,8 @@ namespace ariel {
         return *this->players[(size_t)this->currPlayer];
     }
 
-    Board& Catan::getBoard(){
-        return *this->board;
+    Board* Catan::getBoard(){
+        return this->board;
     }
     void Catan::nextPlayer(){
         this->currPlayer = (this->currPlayer + 1) % 3;

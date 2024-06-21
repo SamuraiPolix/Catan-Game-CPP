@@ -26,7 +26,7 @@ namespace ariel {
         ~Catan();
         Player& getCurrentPlayer();
         void ChooseStartingPlayer();
-        Board& getBoard();
+        Board* getBoard();
         int printWinner();
         void nextPlayer();
         void printPlayersExceptCurrent();

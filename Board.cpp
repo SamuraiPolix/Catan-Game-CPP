@@ -277,22 +277,20 @@ namespace ariel {
     }
 
     int Board::indexToRowColPos(size_t index, size_t& row, size_t& col, size_t& pos){
-        size_t vertices = 0;
         size_t rows = 0, cols = 0;
-        for (size_t i = 0; i < 19; i++){
-            if (i == 3 || i == 7 || i == 12 || i == 16){
+        for (size_t tile = 0; tile < 19; tile++){
+            if (tile == 3 || tile == 7 || tile == 12 || tile == 16){
                 rows++;
                 cols = 0;
             }
             for (size_t j = 0; j < 6; j++){
-                if (boardVertices[vertices][j] == index){
+                if (boardVertices[tile][j] == index){
                     row = rows;
                     col = cols;
                     pos = j;
                     return 0;
                 }
                 cols++;
-                vertices++;
             }
         }
         return -1;
@@ -330,6 +328,7 @@ namespace ariel {
 
         // col = 0;
         // row++;
+
     
     size_t boardSize[] = {3, 4, 5, 4, 3};
     size_t padding[5] = {0, 5, 10, 5, 0};
@@ -338,7 +337,7 @@ namespace ariel {
     for (size_t row = 0; row < numberOfRows; ++row) {
         // Print the top vertices
         if (row == 0){
-            std::cout << std::setw(31 - padding[row]); // Adjust leading spaces
+            std::cout << std::setw(35 - padding[row]) << " "; // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
                 if (board[row][col].getVertex(VertexPosition::VERTEX_TOP)->getOwner() != NULL){
                     Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP);
@@ -347,8 +346,8 @@ namespace ariel {
                     std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_TOP);
                     // std::cout << row << col << VERTEX_TOP;
                 }
-                if (col < boardSize[row] - 1) {
-                    std::cout << std::setw(11+col);
+                if (col < boardSize[row]) {
+                    std::cout << std::setw(12);
                 }
             }
             std::cout << std::endl;
@@ -356,7 +355,7 @@ namespace ariel {
 
         // Print the top slashes and spaces between hexagons
         if (row < 3) {
-            std::cout << std::setw(29 - padding[row]); // Adjust leading spaces
+            std::cout << std::setw(33 - padding[row]) << " "; // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
                 // if there is a road on this, color it with players color
                 if (board[row][col].getEdge(EdgePosition::EDGE_TOP_LEFT)->getOwner() != NULL){
@@ -371,13 +370,15 @@ namespace ariel {
                 } else {
                     std::cout << std::setw(5) << "\\";
                 }
-                std::cout << std::setw(7);
+                if (col < boardSize[row]) {
+                    std::cout << std::setw(7);
+                }
             }
             std::cout << std::endl;
         }
         else {
-            std::cout << std::setw(25 - padding[row]); // Adjust leading spaces
-            for (size_t col = 0; col <= boardSize[row]; ++col) {
+            std::cout << std::setw(28 - padding[row]) << " "; // Adjust leading spaces
+            for (size_t col = 0; col < boardSize[row]; ++col) {
                 if (board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT)->getOwner() != NULL){
                     Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT);
                     std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << "\\" << "\033[0m";
@@ -388,15 +389,19 @@ namespace ariel {
                     Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
                     std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << std::setw(5) << "/" << "\033[0m";
                 } else {
-                    std::cout << std::setw(5) << "/" << std::setw(7);
+                    std::cout << std::setw(5) << "/";
+                }
+                if (col < boardSize[row]) {
+                    std::cout << std::setw(7);
                 }
             }
+            std::cout << "\\" << std::setw(5) << "/";
             std::cout << std::endl;
         }
         
 
         // Print the middle vertices
-        std::cout << std::setw(26 - padding[row]); // Adjust leading spaces
+        std::cout << std::setw(30 - padding[row]) << " "; // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
             if (board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT)->getOwner() != NULL){
                 Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT);
@@ -406,7 +411,7 @@ namespace ariel {
                 std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_TOP_LEFT);
             }
             if (col < boardSize[row]) {
-                std::cout << std::setw(11+col);
+                std::cout << std::setw(10) << " ";
             }
         }
         // std::cout << row << (boardSize[row] - 1) << VERTEX_TOP_RIGHT;
@@ -414,7 +419,7 @@ namespace ariel {
         std::cout << std::endl;
 
         // Print the vertical bars
-        std::cout << std::setw(27 - padding[row]); // Adjust leading spaces
+        std::cout << std::setw(30 - padding[row]) << " "; // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
             if (board[row][col].getEdge(EdgePosition::EDGE_LEFT)->getOwner() != NULL){
                 Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_LEFT);
@@ -422,12 +427,15 @@ namespace ariel {
             } else {
                 std::cout << "|";
             }
-            std::cout << std::setw(6) << getResourceName(board[row][col].getResource()) << "(" << board[row][col].getNumber() << ")" << std::setw(2);
+            std::cout << std::setw(2) << " " << getResourceName(board[row][col].getResource()) << "(" << board[row][col].getNumber() << ")";
+            if (col < boardSize[row]) {
+                std::cout << std::setw(2) << " ";
+            }
         }
         std::cout << "|" << std::endl;
 
         // Print the bottom vertices
-        std::cout << std::setw(26 - padding[row]); // Adjust leading spaces
+        std::cout << std::setw(30 - padding[row]) << " "; // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
             if (board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT)->getOwner() != NULL){
                 Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT);
@@ -437,7 +445,7 @@ namespace ariel {
                 std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_BOTTOM_LEFT);
             }
             if (col < boardSize[row]) {
-                std::cout << std::setw(11+col);
+                std::cout << std::setw(12);
             }
         }
         // std::cout << row << (boardSize[row] - 1) << VERTEX_BOTTOM_RIGHT;
@@ -446,9 +454,12 @@ namespace ariel {
 
         // Print the bottom slashes and spaces between hexagons
         if (row == 4){
-            std::cout << std::setw(31 -  padding[row]); // Adjust leading spaces
+            std::cout << std::setw(34 -  padding[row]) << " "; // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
-                std::cout << "\\" << std::setw(5) << "/" << std::setw(7);
+                std::cout << "\\" << std::setw(5) << "/";
+                if (col < boardSize[row]) {
+                    std::cout << std::setw(7);
+                }
             }
             std::cout << std::endl;
         }
@@ -456,12 +467,12 @@ namespace ariel {
     }
 
     // print bottom vertice bottom row
-    std::cout << std::setw(30 - padding[4]); // Adjust leading spaces
+    std::cout << std::setw(38 - padding[4]); // Adjust leading spaces
     for (size_t col = 0; col < boardSize[4]; ++col) {
         // std::cout << numberOfRows-1 << col << VERTEX_BOTTOM;
         std::cout << rowColPosToIndex(numberOfRows-1, col, VertexPosition::VERTEX_BOTTOM);
-        if (col < boardSize[4] - 1) {
-            std::cout << std::setw(11+col);
+        if (col < boardSize[4]-1) {
+            std::cout << std::setw(12);
         }
     }
     std::cout << std::endl;
