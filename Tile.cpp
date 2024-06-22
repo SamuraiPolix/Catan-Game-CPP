@@ -99,6 +99,9 @@ namespace ariel{
     }
 
     int Tile::setRoadAt(EdgePosition pos, Player& player){
+        std::cout << "TYPE: " << hexEdges[pos]->getType() << "\n";
+        std::cout << "Land: " << this->getResource() << "\n";
+        std::cout << "NUM: " << this->getNumber() << "\n";
         if (hexEdges[pos]->getType() == BuildableTypes::None){
             hexEdges[pos]->setRoad(player);
             return 0;

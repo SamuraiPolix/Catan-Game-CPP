@@ -11,7 +11,7 @@ using std::vector, std::string, std::cout, std::endl, std::shuffle, std::default
 
 
 namespace ariel {
-    Board::Board() {
+    Board::Board() : buildablesVertices(54), buildablesEdges(72){
         // generate random board - set tiles with resources and numbers
         // first row has 3 tiles, second row has 4 tiles, third row has 5 tiles, fourth row has 4 tiles, fifth row has 3 tiles
 
@@ -34,18 +34,41 @@ namespace ariel {
             2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12
         };
 
-        buildablesVertices = new Buildable[54];
-        buildablesEdges = new Buildable[54];
+        // buildablesVertices = new Buildable[54];
+        // buildablesEdges = new Buildable[72];
         
         // shuffle the lands and numbers by seed (to allow testing)
         shuffle(begin(allLands), end(allLands), default_random_engine(0));
         shuffle(begin(allNumbers), end(allNumbers), default_random_engine(0));
 
-        // Init all Buildables
-        for (int i = 0; i < 54; i++){
-            buildablesVertices[i] = Buildable();
-            buildablesEdges[i] = Buildable();
+// print board edges
+        for (int i = 0; i < 19; i++){
+            for (int j = 0; j < 6; j++){
+                cout << "Tile " << i << " index " << j << " " << boardEdges[i][j] << endl;
+            }
         }
+
+        
+        // Init all Buildables vertices
+        for (size_t i = 0; i < 54; i++){
+            buildablesVertices[i] = Buildable();
+        }
+        
+
+        // Init all Buildables edges
+        for (size_t i = 0; i < 72; i++){
+            buildablesEdges[i] = Buildable();
+            cout << "edge" << i << " " << &buildablesEdges[i] << endl;
+        }
+
+        // print board edges
+        for (size_t i = 0; i < 19; i++){
+            for (size_t j = 0; j < 6; j++){
+                cout << "Tile " << i << " index " << j << " " << boardEdges[i][j] << endl;
+            }
+        }
+
+        
 
         // init board tiles with generated resources and numbers
         int landIndex = 0;
@@ -72,18 +95,19 @@ namespace ariel {
                 // set all positions to buildables created before
                 for (size_t pos = 0; pos < NUM_OF_VERTICES; pos++){
                     tilesRow[tilesRow.size()-1].setVertexAtPos(pos, &buildablesVertices[boardVertices[tile][pos]]);
-                    tilesRow[tilesRow.size()-1].setEdgeAtPos(pos, &buildablesEdges[boardVertices[tile][pos]]);
+                    tilesRow[tilesRow.size()-1].setEdgeAtPos(pos, &buildablesEdges[boardEdges[tile][pos]]);
+
+                    cout << "row" << row << "col" << col << "pos" << pos  << " Tile " << tile << " index " << boardEdges[tile][pos] << " " << tilesRow[tilesRow.size()-1].getEdge((EdgePosition)pos) << " - " << &buildablesEdges[boardEdges[tile][pos]] << endl;
                 }
                 tile++;
             }
             tilesRow.shrink_to_fit();
             this->board.push_back(tilesRow);
         }
-        
     }
     Board::~Board(){
-        delete[] buildablesVertices;
-        delete[] buildablesEdges;
+        // delete[] buildablesVertices;
+        // delete[] buildablesEdges;
     }
 
     int Board::placeSettlement(Player& owner, size_t index){
@@ -97,32 +121,13 @@ namespace ariel {
     }
 
     int Board::placeRoad(Player& owner, size_t index1, size_t index2){
-        size_t tileX1, tileY1, tileX2, tileY2, tilePos;
-        EdgePosition tilePos1, tilePos2;
-        if (indexToRowColPos(index1, tileX1, tileY1, tilePos) == -1){
+        size_t tileX, tileY, tilePos;
+        if (indexToRowColPosRoad(index1, index2, tileX, tileY, tilePos) == -1){
             throw std::invalid_argument("Failed to place road  at " + std::to_string(index1) + ", " + std::to_string(index2)
             + "\nInvalid index\n");
         }
-        tilePos1 = (EdgePosition)tilePos;
-        if (indexToRowColPos(index2, tileX2, tileY2, tilePos) == -1){
-            throw std::invalid_argument("Failed to place road  at " + std::to_string(index1) + ", " + std::to_string(index2)
-            + "\nInvalid index\n");
-        }
-        tilePos2 = (EdgePosition)tilePos;
 
-        for (int row = 0; row < NUM_OF_TILES; row++){
-            for (int pos = 0; pos < NUM_OF_EDGES; pos++){
-                if (boardVertices[row][pos] == index1 && boardVertices[row][pos+1] == index2){
-                    return placeRoad(owner, tileX1, tileY1, tilePos1);
-                }
-                if (boardVertices[row][pos] == index2 && boardVertices[row][pos+1] == index1){
-                    return placeRoad(owner, tileX2, tileY2, tilePos2);
-                }
-            }
-        }
-
-        throw std::invalid_argument("Failed to place road  at " + std::to_string(index1) + ", " + std::to_string(index2)
-        + "\nInvalid index\n");
+        return placeRoad(owner, tileX, tileY, (EdgePosition)tilePos);
         
         // return -1;       // failed to place road
     }
@@ -158,12 +163,12 @@ namespace ariel {
     int Board::placeRoad(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos){
         // We first need to make sure the player has a settlement, city or road near this edge
         if (hasBuildingNear(owner, tileX, tileY, tilePos) == 0){
-            throw std::invalid_argument("Failed to place road at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            throw std::invalid_argument("Failed to place road at Y,X " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
             + "\nPlayer " + owner.getName() + " does not have a building near this edge\n");
         }
         // try to place a road at the given position, returns 0 if successful, -1 if not
         if (this->board[tileY][tileX].setRoadAt(tilePos, owner) == -1){
-            throw std::invalid_argument("Failed to place road at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            throw std::invalid_argument("Failed to place road at Y,X " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
             + "\nEdge is already taken\n");
         }
         // this->board[tileY][tileX].setRoadAt(tilePos, owner);
@@ -210,8 +215,8 @@ namespace ariel {
                 }
                 break;
             case VertexPosition::VERTEX_TOP_RIGHT:
-                if ((tileX < this->board[tileY].size() && this->board[tileY][tileX+1].isEdgeOwner(EdgePosition::EDGE_TOP_LEFT, owner) ||
-                    (tileY > 0 && tileX < this->board[tileY-1].size() && this->board[tileY-1][tileX].isEdgeOwner(EdgePosition::EDGE_BOTTOM_RIGHT, owner))))
+                if ((tileX < this->board[tileY].size()-1 && this->board[tileY][tileX+1].isEdgeOwner(EdgePosition::EDGE_TOP_LEFT, owner) ||
+                    (tileY > 0 && tileX < this->board[tileY-1].size()-1 && this->board[tileY-1][tileX].isEdgeOwner(EdgePosition::EDGE_BOTTOM_RIGHT, owner))))
                 {
                     return 1;
                 }
@@ -276,7 +281,7 @@ namespace ariel {
         return boardVertices[vertices][pos];
     }
 
-    int Board::indexToRowColPos(size_t index, size_t& row, size_t& col, size_t& pos){
+    int Board::indexToRowColPos(size_t index, size_t& col, size_t& row, size_t& pos){
         size_t rows = 0, cols = 0;
         for (size_t tile = 0; tile < 19; tile++){
             if (tile == 3 || tile == 7 || tile == 12 || tile == 16){
@@ -288,10 +293,39 @@ namespace ariel {
                     row = rows;
                     col = cols;
                     pos = j;
+                    cout << "row: " << row << " col: " << col << " pos: " << pos << endl;
                     return 0;
                 }
-                cols++;
             }
+            cols++;
+        }
+        return -1;
+    }
+
+    int Board::indexToRowColPosRoad(size_t index1, size_t index2, size_t& col, size_t& row, size_t& pos){
+        size_t rows = 0, cols = 0;
+        for (size_t tile = 0; tile < 19; tile++){
+            if (tile == 3 || tile == 7 || tile == 12 || tile == 16){
+                rows++;
+                cols = 0;
+            }
+            for (size_t j = 0; j < 6; j++){
+                if (boardVertices[tile][j] == index1 && j+1 < 6 && boardVertices[tile][j+1] == index2){
+                    row = rows;
+                    col = cols;
+                    pos = j;
+                    cout << "row: " << row << " col: " << col << " pos: " << pos << endl;
+                    return 0;
+                }
+                else if (boardVertices[tile][j] == index2 && j+1 < 6 && boardVertices[tile][j+1] == index1){
+                    row = rows;
+                    col = cols;
+                    pos = j;
+                    cout << "row: " << row << " col: " << col << " pos: " << pos << endl;
+                    return 0;
+                }
+            }
+            cols++;
         }
         return -1;
     }
@@ -328,6 +362,8 @@ namespace ariel {
 
         // col = 0;
         // row++;
+    
+    // cout << &buildablesEdges[0] << endl;
 
     
     size_t boardSize[] = {3, 4, 5, 4, 3};
@@ -341,7 +377,7 @@ namespace ariel {
             for (size_t col = 0; col < boardSize[row]; ++col) {
                 if (board[row][col].getVertex(VertexPosition::VERTEX_TOP)->getOwner() != NULL){
                     Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP);
-                    std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << buildable << "\033[0m";
+                    std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << *buildable << "\033[0m";
                 } else {
                     std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_TOP);
                     // std::cout << row << col << VERTEX_TOP;
@@ -405,7 +441,7 @@ namespace ariel {
         for (size_t col = 0; col < boardSize[row]; ++col) {
             if (board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT)->getOwner() != NULL){
                 Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT);
-                std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << buildable << "\033[0m";
+                std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << *buildable << "\033[0m";
             } else {
                 // std::cout << row << col << VERTEX_TOP_LEFT;
                 std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_TOP_LEFT);
@@ -439,7 +475,7 @@ namespace ariel {
         for (size_t col = 0; col < boardSize[row]; ++col) {
             if (board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT)->getOwner() != NULL){
                 Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT);
-                std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << buildable << "\033[0m";
+                std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << *buildable << "\033[0m";
             } else {
                 // std::cout << row << col << VERTEX_BOTTOM_LEFT;
                 std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_BOTTOM_LEFT);

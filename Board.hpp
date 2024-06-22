@@ -16,15 +16,14 @@ namespace ariel {
     {
     // private members
         vector<vector<Tile>> board;
-        Buildable* buildables;
-        Buildable* buildablesVertices;
-        Buildable* buildablesEdges;
+        vector<Buildable> buildablesVertices;
+        vector<Buildable> buildablesEdges;
 
         // The whole board, seperated into the vertices in each tile
         // Used to have control over the Buildables from Board
-        int boardVertices[NUM_OF_TILES][NUM_OF_VERTICES] = 
+        size_t boardVertices[NUM_OF_TILES][NUM_OF_VERTICES] = 
         {
-            {0, 1, 2, 10, 9, 5},
+            {0, 1, 2, 10, 9, 8},
             {2, 3, 4, 12, 11, 10},
             {4, 5, 6, 14, 13, 12},
             {7, 8, 9, 19, 18, 17},
@@ -45,6 +44,29 @@ namespace ariel {
             {43, 44, 45, 53, 52, 51}
         };
 
+        size_t boardEdges[NUM_OF_TILES][NUM_OF_VERTICES] =
+        {
+            {0, 1, 2, 3, 4, 5},
+            {6, 7, 8, 9, 19, 2},
+            {11, 12, 13, 14, 15, 8},
+            {16, 4, 17, 18, 19, 20},
+            {3, 10, 21, 22, 23, 17},
+            {9, 15, 24, 25, 26, 21},
+            {14, 27, 28, 29, 30, 24},
+            {31, 19, 32, 33, 34, 35},
+            {18, 23, 36, 37, 38, 32},
+            {22, 26, 39, 40, 41, 36},
+            {25, 30, 42, 43, 44, 39},
+            {29, 45, 46, 47, 48, 42},
+            {33, 38, 49, 50, 51, 52},
+            {37, 41, 53, 54, 55, 49},
+            {40, 44, 56, 57, 58, 53},
+            {43, 48, 59, 60, 61, 56},
+            {50, 55, 62, 63, 64, 65},
+            {54, 58, 66, 67, 68, 62},
+            {57, 61, 69, 70, 71, 66}
+        };
+
     // private methods - mostly used to simplify API
         int hasBuildingNear(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos);
         int hasRoadNear(Player& owner, size_t tileX, size_t tileY, VertexPosition tilePos);
@@ -53,6 +75,7 @@ namespace ariel {
         int placeRoad(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos);
         int rowColPosToIndex(size_t row, size_t col, size_t pos);
         int indexToRowColPos(size_t index, size_t& row, size_t& col, size_t& pos);
+        int indexToRowColPosRoad(size_t index1, size_t index2, size_t& row, size_t& col, size_t& pos);
     public:
         Board();
         ~Board();
