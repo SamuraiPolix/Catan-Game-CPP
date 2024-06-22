@@ -51,13 +51,13 @@ namespace ariel {
         
         // Init all Buildables vertices
         for (size_t i = 0; i < 54; i++){
-            buildablesVertices[i] = Buildable();
+            buildablesVertices[i] = Buildable(i);
         }
         
 
         // Init all Buildables edges
         for (size_t i = 0; i < 72; i++){
-            buildablesEdges[i] = Buildable();
+            buildablesEdges[i] = Buildable(i);
             cout << "edge" << i << " " << &buildablesEdges[i] << endl;
         }
 
@@ -111,13 +111,49 @@ namespace ariel {
     }
 
     int Board::placeSettlement(Player& owner, size_t index){
-        size_t tileX, tileY, _tilePos;
-        if (indexToRowColPos(index, tileX, tileY, _tilePos) == -1){
+        size_t tileX, tileY, tilePos;
+        if (indexToRowColPos(index, tileX, tileY, tilePos) == -1){
             throw std::invalid_argument("Failed to place settlement at " + std::to_string(index)
             + "\nInvalid index\n");
         }
-        VertexPosition tilePos = (VertexPosition)_tilePos;
-        return placeSettlement(owner, tileX, tileY, tilePos);
+        // If player doesn't already have 2 settlments - they can place them anywhere (if the vertex is free)
+        if (owner.numOfSettlements() < 2){
+            // try to place a settlement at the given position, returns 0 if successful, -1 if not
+            if (this->board[tileY][tileX].setSettlementAt((VertexPosition)tilePos, owner) == -1){
+                throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+                + "\nVertex is already taken\n");
+            }
+
+            // iterate over all tiles, if tile has the vertex index, add it to the player's tiles
+            for (size_t i = 0; i < this->board.size(); i++){
+                for (size_t j = 0; j < this->board[i].size(); j++){
+                    if (this->board[i][j].hasIndexVertex(index)){
+                        owner.addTile(this->board[i][j]);
+                    }
+                }
+            }
+            
+            return 1;       // success
+        }
+        // else, player has 2 settlements and can only place them near their roads
+        // We first need to make sure the player has a road near this vertex
+        // Resource: https://www.catan.com/understand-catan/game-rules (page 4 bottom, 5 top)
+        if (hasRoadNear(owner, tileX, tileY, (VertexPosition)tilePos) == -1){
+            throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            + "\nPlayer " + owner.getName() + " does not have a road connecting to this vertex\n");
+        }
+        // Player has a road connecting to desired settlement
+        // try to place a settlement at the given position, returns 0 if successful, -1 if not
+        if (this->board[tileY][tileX].setSettlementAt((VertexPosition)tilePos, owner) == -1){
+            throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+            + "\nVertex is already taken\n");
+        }
+
+        owner.addTilesByIndex(index);
+
+
+        // this->board[tileY][tileX].setSettlementAt(tilePos, owner);
+        return 1;       // success
     }
 
     int Board::placeRoad(Player& owner, size_t index1, size_t index2){
@@ -127,47 +163,13 @@ namespace ariel {
             + "\nInvalid index\n");
         }
 
-        return placeRoad(owner, tileX, tileY, (EdgePosition)tilePos);
-        
-        // return -1;       // failed to place road
-    }
-    
-    int Board::placeSettlement(Player& owner, size_t tileX, size_t tileY, VertexPosition  tilePos){
-        // If player doesn't already have 2 settlments - they can place them anywhere (if the vertex is free)
-        if (owner.numOfSettlements() < 2){
-            // try to place a settlement at the given position, returns 0 if successful, -1 if not
-            if (this->board[tileY][tileX].setSettlementAt(tilePos, owner) == -1){
-                throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
-                + "\nVertex is already taken\n");
-            }
-            owner.addTile(this->board[tileY][tileX]);
-            return 1;       // success
-        }
-        // else, player has 2 settlements and can only place them near their roads
-        // We first need to make sure the player has a road near this vertex
-        // Resource: https://www.catan.com/understand-catan/game-rules (page 4 bottom, 5 top)
-        if (hasRoadNear(owner, tileX, tileY, tilePos) == -1){
-            throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
-            + "\nPlayer " + owner.getName() + " does not have a road connecting to this vertex\n");
-        }
-        // Player has a road connecting to desired settlement
-        // try to place a settlement at the given position, returns 0 if successful, -1 if not
-        if (this->board[tileY][tileX].setSettlementAt(tilePos, owner) == -1){
-            throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
-            + "\nVertex is already taken\n");
-        }
-        // this->board[tileY][tileX].setSettlementAt(tilePos, owner);
-        return 1;       // success
-    }
-
-    int Board::placeRoad(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos){
         // We first need to make sure the player has a settlement, city or road near this edge
-        if (hasBuildingNear(owner, tileX, tileY, tilePos) == 0){
+        if (hasBuildingNear(owner, tileX, tileY, (EdgePosition)tilePos) == 0){
             throw std::invalid_argument("Failed to place road at Y,X " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
             + "\nPlayer " + owner.getName() + " does not have a building near this edge\n");
         }
         // try to place a road at the given position, returns 0 if successful, -1 if not
-        if (this->board[tileY][tileX].setRoadAt(tilePos, owner) == -1){
+        if (this->board[tileY][tileX].setRoadAt((EdgePosition)tilePos, owner) == -1){
             throw std::invalid_argument("Failed to place road at Y,X " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
             + "\nEdge is already taken\n");
         }

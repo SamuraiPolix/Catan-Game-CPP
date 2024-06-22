@@ -51,6 +51,7 @@ namespace ariel{
             void addResource(ResourceType resource, int amount);
             int getVictoryPoints();
             int addVictoryPoints(size_t points);
+            int addTilesByIndex(size_t index);
             vector<Tile>& getTiles();
             Color getColor();
     };

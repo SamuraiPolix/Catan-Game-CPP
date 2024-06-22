@@ -73,6 +73,14 @@ namespace ariel{
         else
             return false;
     }
+    bool Tile::hasIndexVertex(size_t index){
+        for (size_t i = 0; i < 6; i++){
+            if (hexVertices[i]->getIndex() == index){
+                return true;
+            }
+        }
+        return false;
+    }
     int Tile::setSettlementAt(VertexPosition pos, Player& player){
         std::cout << "TYPE: " << hexVertices[pos]->getType() << "\n";
         std::cout << "Land: " << this->getResource() << "\n";

@@ -21,17 +21,19 @@ namespace ariel {
         BuildableTypes type;
         Player* owner;
         Tile* tile;
-        size_t pos;
+        size_t index;
         
     public:
         Buildable();
-        Buildable(BuildableTypes type, Player& owner, size_t pos);
+        Buildable(size_t index);
+        Buildable(BuildableTypes type, Player& owner, size_t index);
 
         void setSettlement(Player& owner);
         void setRoad(Player& owner);
         Player* getOwner() const;
         Tile& getTile() const;
         BuildableTypes getType() const;
+        size_t getIndex() const;
 
         friend ostream& operator<<(ostream& os, const Buildable& buildable);
     };

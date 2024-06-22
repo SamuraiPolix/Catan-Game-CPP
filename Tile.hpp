@@ -61,6 +61,8 @@ namespace ariel {
             Buildable* getEdge(EdgePosition pos);
             bool isVertexOwner(VertexPosition pos, Player& player);
             bool isEdgeOwner(EdgePosition pos, Player& player);
+            bool hasIndexVertex(size_t index);
+            bool hasIndexEdge(size_t index);
             size_t getX() const {return x;};
             size_t getY() const {return y;};
     };

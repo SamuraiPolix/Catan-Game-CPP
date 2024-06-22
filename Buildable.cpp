@@ -8,13 +8,19 @@ namespace ariel {
         // this->tile = &tile;
         type = BuildableTypes::None;
         owner = NULL;
-        pos = 0;
+        index = 0;
     }
-    Buildable::Buildable(BuildableTypes type, Player& owner, size_t pos){
+    Buildable::Buildable(size_t index){
+        // this->tile = &tile;
+        type = BuildableTypes::None;
+        owner = NULL;
+        this->index = index;
+    }
+    Buildable::Buildable(BuildableTypes type, Player& owner, size_t index){
         // this->tile = &tile;
         this->type = type;
         this->owner = &owner;
-        this->pos = pos;
+        this->index = index;
     }
     void Buildable::setSettlement(Player& owner){
         type = Settlement;
@@ -32,6 +38,9 @@ namespace ariel {
     }
     BuildableTypes Buildable::getType() const{
         return type;
+    }
+    size_t Buildable::getIndex() const{
+        return index;
     }
     ostream& operator<<(ostream& os, const Buildable& buildable){
         if (buildable.owner != NULL){

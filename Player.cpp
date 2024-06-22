@@ -150,6 +150,16 @@ namespace ariel{
         tiles.push_back(tile);
     }
 
+    int Player::addTilesByIndex(size_t index){
+        for (size_t i = 0; i < tiles.size(); i++){
+            if (tiles[i].getIndex() == index){
+                return -1;
+            }
+        }
+        tiles.push_back(Tile(index));
+        return 0;
+    }
+
     void Player::addResource(ResourceType resource, int amount){
         resources[resource-1] += amount;
     }
