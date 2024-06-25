@@ -29,6 +29,7 @@ namespace ariel{
         return NULL;
     }
 
+    // TODO add return int to all uses - return status
     void RoadBuildingCard::use(){
         int x = 0;
     }

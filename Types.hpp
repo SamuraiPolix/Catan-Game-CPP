@@ -3,8 +3,19 @@
 #include <cstdlib>  // Include for size_t definition
 #include <string>
 
+using std::string;
 
 namespace ariel{
+    class valid_resources : public std::exception {
+    private:
+        const char * message;
+
+    public:
+        valid_resources(const char *msg) : message(msg) {}
+        const char* what() const noexcept override {
+            return message;
+        }
+    };
     // enum of all resource types
     enum Color {
         Black = 30,

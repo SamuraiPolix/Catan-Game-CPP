@@ -5,16 +5,17 @@
 #include <vector>
 #include <map>
 #include "Types.hpp"
-#include "Buildable.hpp"
 #include "DevelopmentCard.hpp"
 #include "Tile.hpp"
 #include <tuple>
 
-using std::vector, std::string, std::map, std::tuple;
+using std::vector, std::string, std::map, std::tuple, std::ostream;
 
 namespace ariel{
     class Board;
     class Catan;
+    class Buildable;
+    class Tile;
     class Player
     {
         static int playerCounter;
@@ -36,14 +37,16 @@ namespace ariel{
             Player(string name);
             int placeSettlement(size_t index, Board* board);
             int placeRoad(size_t vertex1, size_t vertex2, Board* board);
-            void buyDevelopmentCard(Catan& catan);
-            void addDevelopmentCard(DevelopmentCard& card);
+            size_t printDevelopmentCards();
+            size_t buyDevelopmentCard(Catan& catan);
+            size_t addDevelopmentCard(DevelopmentCard& card);
+            int useDevelopmentCard(size_t indexInHand);
             void printPoints();
             void trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const int& amountSent, const int& amountReceived);
             void rollDice(Catan& catan);
             void endTurn(Catan& catan);
             void startTurn();
-            string getName();
+            string getName() const;
             int numOfSettlements();
             int numOfRoads();
             int getResourceAmount(ResourceType resource);
@@ -51,8 +54,9 @@ namespace ariel{
             void addResource(ResourceType resource, int amount);
             int getVictoryPoints();
             int addVictoryPoints(size_t points);
-            int addTilesByIndex(size_t index);
+            // int addTilesByIndex(size_t index);
             vector<Tile>& getTiles();
             Color getColor();
+            friend ostream& operator<<(ostream& os, const Player& player);
     };
 }

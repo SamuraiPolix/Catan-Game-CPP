@@ -26,7 +26,7 @@ int main()
 
     catan.ChooseStartingPlayer();   // should print the name of the starting player
     Board* board = catan.getBoard();
-    catan.getBoard()->printBoard();
+    catan.printBoard();
     size_t choice = 0;
     for (int i = 0; i < 2; i++){        // 2 settlements and 2 roads for each player
         for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
@@ -76,14 +76,14 @@ int main()
                 }
             } while (status == -1);
             currPlayer.endTurn(catan);
-            catan.getBoard()->printBoard();
+            catan.printBoard();
         }
     }
 
     // main game loop
     while (true)
     {
-        catan.getBoard()->printBoard();
+        catan.printBoard();
         Player& currPlayer = catan.getCurrentPlayer();
         cout << "Player " << currPlayer.getName() << " turn" << endl;
 
@@ -93,75 +93,145 @@ int main()
         cin >> choice;
         if (choice == 1){
             currPlayer.rollDice(catan);
-            cout << "Choose your action:" << endl;
-            cout << "1. Build a settlement" << endl;
-            cout << "2. Build a road" << endl;
-            cout << "3. Buy a development card" << endl;
-            cout << "4. Use a development card" << endl;
-            cout << "5. Trade" << endl;
-            cin >> choice;
-            if (choice == 1){
-                cout << "Choose a vertex to place a settlement" << endl;
-                int status = -1;
-                do {
-                    cin >> choice;
-                    while (choice < 0){
-                        cout << "Invalid choice" << endl;
-                        cin >> choice;
-                    }
-                    try {
-                        status = currPlayer.placeSettlement(choice, board);
-                    } catch (const std::invalid_argument& e){
-                        cout << e.what() << endl;
-                        status = -1;
-                    }
-                    if (status == -1){
-                        cout << "Please choose another" << endl;
-                    }
-                } while (status == -1);
-            }
-            else if (choice == 2){
-                cout << "Choose an edge to place a road" << endl;
-                int status = -1;
-                do {
-                    size_t vertex1, vertex2;
-                    cin >> vertex1;
-                    while (vertex1 < 0){
-                        cout << "Invalid choice" << endl;
-                        cin >> vertex1;
-                    }
-                    cin >> vertex2;
-                    while (vertex2 < 0){
-                        cout << "Invalid choice" << endl;
-                        cin >> vertex2;
-                    }
-                    try {
-                        status = currPlayer.placeRoad(vertex1, vertex2, board);
-                    } catch (const std::invalid_argument& e){
-                        cout << e.what() << endl;
-                        status = -1;
-                    }
-                    if (status == -1){
-                        cout << "Please choose another" << endl;
-                    }
-                } while (status == -1);
-            }
-            else if (choice == 3){
-                currPlayer.buyDevelopmentCard(catan);
-                cout << "Do you want to use the development card? (1 for yes, 0 for no)" << endl;
+            int status = -1;
+            while (status < 0){
+                cout << "Choose your action:" << endl;
+                cout << "1. Build a settlement" << endl;
+                cout << "2. Build a road" << endl;
+                cout << "3. Buy a development card" << endl;
+                cout << "4. Use a development card" << endl;
+                cout << "5. Trade" << endl;
+                cout << "6. End turn" << endl;
                 cin >> choice;
-                // if (choice == 1){
-                //     currPlayer.useDevelopmentCard();
-                // }
-            }
-            else if (choice == 4){
-                // currPlayer.useDevelopmentCard();
-            }
-            else if (choice == 5){
-                dealWithTrade(currPlayer, catan);
+                if (choice == 1){
+                    cout << "Choose a vertex to place a settlement" << endl;
+                    status = -1;
+                    do {
+                        cin >> choice;
+                        while (choice < 0){
+                            cout << "Invalid choice" << endl;
+                            cin >> choice;
+                        }
+                        try {
+                            status = currPlayer.placeSettlement(choice, board);
+                        } catch (const std::invalid_argument& e){
+                            cout << e.what() << endl;
+                            status = -1;
+                        } catch (const valid_resources& e){
+                            cout << e.what() << endl;
+                            status = -2;
+                        }
+                        if (status == -1){
+                            cout << "Please choose another" << endl;
+                        }
+                        else if (status == -2){
+                            cout << "Please choose another action" << endl;
+                            // goes over loop again
+                        }
+                    } while (status == -1);
+                }
+                else if (choice == 2){
+                    cout << "Choose an edge to place a road" << endl;
+                    status = -1;
+                    do {
+                        size_t vertex1, vertex2;
+                        cin >> vertex1;
+                        while (vertex1 < 0){
+                            cout << "Invalid choice" << endl;
+                            cin >> vertex1;
+                        }
+                        cin >> vertex2;
+                        while (vertex2 < 0){
+                            cout << "Invalid choice" << endl;
+                            cin >> vertex2;
+                        }
+                        try {
+                            status = currPlayer.placeRoad(vertex1, vertex2, board);
+                        } catch (const std::invalid_argument& e){
+                            cout << e.what() << endl;
+                            status = -1;
+                        } catch (const valid_resources& e){
+                            cout << e.what() << endl;
+                            status = -2;
+                        }
+                        if (status == -1){
+                            cout << "Please choose another" << endl;
+                        }
+                        else if (status == -2){
+                            cout << "Please choose another action" << endl;
+                            // goes over loop again
+                        }
+                    } while (status == -1);
+                }
+                else if (choice == 3){
+                    status = -1;
+                    size_t cardIndex = INT16_MAX;
+                    try {
+                        cardIndex = currPlayer.buyDevelopmentCard(catan);
+                    } catch (const std::invalid_argument& e){
+                        cout << e.what() << endl;
+                        status = -1;
+                    } catch (const valid_resources& e){
+                        cout << e.what() << endl;
+                        status = -2;
+                        cout << "Please choose another action" << endl;
+                    }
+                    cout << "Do you want to use the development card? (1 for yes, 0 for no)" << endl;
+                    do {
+                        cin >> choice;
+                        if (choice == 1){
+                            currPlayer.useDevelopmentCard(cardIndex);
+                        }
+                        if (choice != 0 && choice != 1){
+                            cout << "Invalid choice!" << endl;
+                        }
+                    } while (choice != 0 && choice != 1);
+                    
+                }
+                else if (choice == 4){
+                    // TODO REPEATED CODE 1
+                    size_t numOfCards = currPlayer.printDevelopmentCards();
+                    if (numOfCards == 0){
+                        status = -2;
+                    }
+                    else {
+                        cout << "Please choose a card to use (write its number and press enter)" << endl;
+                        do {
+                            cin >> choice;
+
+                            status = currPlayer.useDevelopmentCard(choice);
+
+                            if (choice >= numOfCards || status == -1){
+                                cout << "Please choose another" << endl;
+                            }
+                        } while (choice >= numOfCards || status == -1);
+                    }
+                }
+                else if (choice == 5){
+                    dealWithTrade(currPlayer, catan);
+                }
+                // choice 6 does nothing - goes to end of loop to end turn
             }
         }
         else if (choice == 2){
+            int status = -1;
+            // TODO REPEATED CODE 1
+            size_t numOfCards = currPlayer.printDevelopmentCards();
+            if (numOfCards == 0){
+                status = -2;
+            }
+            else {
+                cout << "Please choose a card to use (write its number and press enter)" << endl;
+                do {
+                    cin >> choice;
+
+                    status = currPlayer.useDevelopmentCard(choice);
+
+                    if (choice >= numOfCards || status == -1){
+                        cout << "Please choose another" << endl;
+                    }
+                } while (choice >= numOfCards || status == -1);
+            }
             // currPlayer.useDevelopmentCard();
         }
         else {

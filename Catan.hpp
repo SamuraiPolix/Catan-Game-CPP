@@ -27,10 +27,12 @@ namespace ariel {
         Player& getCurrentPlayer();
         void ChooseStartingPlayer();
         Board* getBoard();
+        void printBoard();
+        void printPlayers();
         int printWinner();
         void nextPlayer();
         void printPlayersExceptCurrent();
-        void addDevelopmentCard(Player& player);
+        size_t addDevelopmentCard(Player& player);
         void giveResources(int diceRoll);
         Player& getPlayerById(int id);
     };

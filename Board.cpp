@@ -51,13 +51,13 @@ namespace ariel {
         
         // Init all Buildables vertices
         for (size_t i = 0; i < 54; i++){
-            buildablesVertices[i] = Buildable(i);
+            buildablesVertices[i] = BuildableVertex(i);
         }
         
 
         // Init all Buildables edges
         for (size_t i = 0; i < 72; i++){
-            buildablesEdges[i] = Buildable(i);
+            buildablesEdges[i] = BuildableEdge(i);
             cout << "edge" << i << " " << &buildablesEdges[i] << endl;
         }
 
@@ -124,16 +124,14 @@ namespace ariel {
                 + "\nVertex is already taken\n");
             }
 
-            // iterate over all tiles, if tile has the vertex index, add it to the player's tiles
-            for (size_t i = 0; i < this->board.size(); i++){
-                for (size_t j = 0; j < this->board[i].size(); j++){
-                    if (this->board[i][j].hasIndexVertex(index)){
-                        owner.addTile(this->board[i][j]);
-                    }
-                }
+            // If this is the second settlement - these are the starting resources for the player
+            if (owner.numOfSettlements() == 1){
+                giveStartingResources(owner, index);
             }
+
+            addTileToPlayer(owner, index);
             
-            return 1;       // success
+            return 0;       // success
         }
         // else, player has 2 settlements and can only place them near their roads
         // We first need to make sure the player has a road near this vertex
@@ -149,11 +147,18 @@ namespace ariel {
             + "\nVertex is already taken\n");
         }
 
-        owner.addTilesByIndex(index);
-
-
         // this->board[tileY][tileX].setSettlementAt(tilePos, owner);
-        return 1;       // success
+        return 0;       // success
+    }
+
+    void Board::giveStartingResources(Player& owner, size_t vertexIndex){
+        for (size_t row = 0; row < board.size(); row++){
+            for (size_t col = 0; col < board[0].size(); col++){
+                if (board[row][col].hasIndexVertex(vertexIndex)){
+                    owner.addResource(board[row][col].getResource(), 1);
+                }
+            }
+        }
     }
 
     int Board::placeRoad(Player& owner, size_t index1, size_t index2){
@@ -174,7 +179,18 @@ namespace ariel {
             + "\nEdge is already taken\n");
         }
         // this->board[tileY][tileX].setRoadAt(tilePos, owner);
-        return 1;       // success
+        return 0;       // success
+    }
+
+    void Board::addTileToPlayer(Player& owner, size_t vertexIndex) {
+        // iterate over all tiles, if tile has the vertex index, add it to the player's tiles
+        for (size_t i = 0; i < this->board.size(); i++){
+            for (size_t j = 0; j < this->board[i].size(); j++){
+                if (this->board[i][j].hasIndexVertex(vertexIndex)){
+                    owner.addTile(this->board[i][j]);
+                }
+            }
+        }
     }
 
     int Board::hasBuildingNear(Player& owner, size_t tileX, size_t tileY, EdgePosition tilePos){
@@ -366,7 +382,6 @@ namespace ariel {
         // row++;
     
     // cout << &buildablesEdges[0] << endl;
-
     
     size_t boardSize[] = {3, 4, 5, 4, 3};
     size_t padding[5] = {0, 5, 10, 5, 0};
@@ -377,13 +392,7 @@ namespace ariel {
         if (row == 0){
             std::cout << std::setw(35 - padding[row]) << " "; // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
-                if (board[row][col].getVertex(VertexPosition::VERTEX_TOP)->getOwner() != NULL){
-                    Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP);
-                    std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << *buildable << "\033[0m";
-                } else {
-                    std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_TOP);
-                    // std::cout << row << col << VERTEX_TOP;
-                }
+                cout << *board[row][col].getVertex(VertexPosition::VERTEX_TOP);
                 if (col < boardSize[row]) {
                     std::cout << std::setw(12);
                 }
@@ -396,18 +405,8 @@ namespace ariel {
             std::cout << std::setw(33 - padding[row]) << " "; // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
                 // if there is a road on this, color it with players color
-                if (board[row][col].getEdge(EdgePosition::EDGE_TOP_LEFT)->getOwner() != NULL){
-                    Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_TOP_LEFT);
-                    std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << "/" << "\033[0m";
-                } else {
-                    std::cout << "/";
-                }
-                if (board[row][col].getEdge(EdgePosition::EDGE_TOP_RIGHT)->getOwner() != NULL){
-                    Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_TOP_RIGHT);
-                    std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << std::setw(5) << "\\" << "\033[0m";
-                } else {
-                    std::cout << std::setw(5) << "\\";
-                }
+                cout << *board[row][col].getEdge(EdgePosition::EDGE_TOP_LEFT);
+                cout << std::setw(5) << *board[row][col].getEdge(EdgePosition::EDGE_TOP_RIGHT);
                 if (col < boardSize[row]) {
                     std::cout << std::setw(7);
                 }
@@ -417,23 +416,14 @@ namespace ariel {
         else {
             std::cout << std::setw(28 - padding[row]) << " "; // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
-                if (board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT)->getOwner() != NULL){
-                    Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT);
-                    std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << "\\" << "\033[0m";
-                } else {
-                    std::cout << "\\";
-                }
-                if (board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT)->getOwner() != NULL){
-                    Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
-                    std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << std::setw(5) << "/" << "\033[0m";
-                } else {
-                    std::cout << std::setw(5) << "/";
-                }
+                cout << *board[row-1][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT);
+                cout << std::setw(5) << *board[row-1][col].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
                 if (col < boardSize[row]) {
                     std::cout << std::setw(7);
                 }
             }
-            std::cout << "\\" << std::setw(5) << "/";
+            std::cout << *board[row-1][boardSize[row]-1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT)
+                        << std::setw(5) << *board[row-1][boardSize[row]-1].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
             std::cout << std::endl;
         }
         
@@ -441,60 +431,43 @@ namespace ariel {
         // Print the middle vertices
         std::cout << std::setw(30 - padding[row]) << " "; // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
-            if (board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT)->getOwner() != NULL){
-                Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT);
-                std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << *buildable << "\033[0m";
-            } else {
-                // std::cout << row << col << VERTEX_TOP_LEFT;
-                std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_TOP_LEFT);
-            }
+            cout << *board[row][col].getVertex(VertexPosition::VERTEX_TOP_LEFT);
             if (col < boardSize[row]) {
                 std::cout << std::setw(10) << " ";
             }
         }
-        // std::cout << row << (boardSize[row] - 1) << VERTEX_TOP_RIGHT;
-        std::cout << rowColPosToIndex(row, boardSize[row] - 1, VertexPosition::VERTEX_TOP_RIGHT);
+        std::cout << *board[row][boardSize[row]-1].getVertex(VertexPosition::VERTEX_TOP_RIGHT);
         std::cout << std::endl;
 
         // Print the vertical bars
         std::cout << std::setw(30 - padding[row]) << " "; // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
-            if (board[row][col].getEdge(EdgePosition::EDGE_LEFT)->getOwner() != NULL){
-                Buildable* buildable = board[row][col].getEdge(EdgePosition::EDGE_LEFT);
-                std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << "|" << "\033[0m";
-            } else {
-                std::cout << "|";
-            }
+            cout << *board[row][col].getEdge(EdgePosition::EDGE_LEFT);
             std::cout << std::setw(2) << " " << getResourceName(board[row][col].getResource()) << "(" << board[row][col].getNumber() << ")";
             if (col < boardSize[row]) {
                 std::cout << std::setw(2) << " ";
             }
         }
-        std::cout << "|" << std::endl;
+        std::cout << *board[row][boardSize[row]-1].getEdge(EdgePosition::EDGE_RIGHT) << std::endl;
 
         // Print the bottom vertices
         std::cout << std::setw(30 - padding[row]) << " "; // Adjust leading spaces
         for (size_t col = 0; col < boardSize[row]; ++col) {
-            if (board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT)->getOwner() != NULL){
-                Buildable* buildable = board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT);
-                std::cout << "\033["<< buildable->getOwner()->getColor() << "m" << *buildable << "\033[0m";
-            } else {
-                // std::cout << row << col << VERTEX_BOTTOM_LEFT;
-                std::cout << rowColPosToIndex(row, col, VertexPosition::VERTEX_BOTTOM_LEFT);
-            }
+            cout << *board[row][col].getVertex(VertexPosition::VERTEX_BOTTOM_LEFT);
             if (col < boardSize[row]) {
                 std::cout << std::setw(12);
             }
         }
         // std::cout << row << (boardSize[row] - 1) << VERTEX_BOTTOM_RIGHT;
-        std::cout << rowColPosToIndex(row, boardSize[row] - 1, VertexPosition::VERTEX_BOTTOM_RIGHT);
+        std::cout << *board[row][boardSize[row]-1].getVertex(VertexPosition::VERTEX_BOTTOM_RIGHT);
         std::cout << std::endl;
 
         // Print the bottom slashes and spaces between hexagons
         if (row == 4){
             std::cout << std::setw(34 -  padding[row]) << " "; // Adjust leading spaces
             for (size_t col = 0; col < boardSize[row]; ++col) {
-                std::cout << "\\" << std::setw(5) << "/";
+                std::cout << *board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_LEFT);
+                cout << std::setw(5) << *board[row][col].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
                 if (col < boardSize[row]) {
                     std::cout << std::setw(7);
                 }
@@ -508,7 +481,7 @@ namespace ariel {
     std::cout << std::setw(38 - padding[4]); // Adjust leading spaces
     for (size_t col = 0; col < boardSize[4]; ++col) {
         // std::cout << numberOfRows-1 << col << VERTEX_BOTTOM;
-        std::cout << rowColPosToIndex(numberOfRows-1, col, VertexPosition::VERTEX_BOTTOM);
+        cout << *board[numberOfRows-1][col].getVertex(VertexPosition::VERTEX_BOTTOM);
         if (col < boardSize[4]-1) {
             std::cout << std::setw(12);
         }

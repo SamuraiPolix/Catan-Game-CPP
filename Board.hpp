@@ -10,14 +10,16 @@ using std::vector, std::string;
 
 namespace ariel {
     class Tile;
-    class Buildable;
+    class BuildableEdge;
+    class BuildableVertex;
+    class Player;
 
     class Board
     {
     // private members
         vector<vector<Tile>> board;
-        vector<Buildable> buildablesVertices;
-        vector<Buildable> buildablesEdges;
+        vector<BuildableVertex> buildablesVertices;
+        vector<BuildableEdge> buildablesEdges;
 
         // The whole board, seperated into the vertices in each tile
         // Used to have control over the Buildables from Board
@@ -76,6 +78,8 @@ namespace ariel {
         int rowColPosToIndex(size_t row, size_t col, size_t pos);
         int indexToRowColPos(size_t index, size_t& row, size_t& col, size_t& pos);
         int indexToRowColPosRoad(size_t index1, size_t index2, size_t& row, size_t& col, size_t& pos);
+        void addTileToPlayer(Player& owner, size_t tileIndex);
+        void giveStartingResources(Player& owner, size_t vertexIndex);
     public:
         Board();
         ~Board();

@@ -17,11 +17,13 @@ namespace ariel{
     //     }
     // }
 
-    void Tile::setVertexAtPos(size_t pos, Buildable* buildable){
+    void Tile::setVertexAtPos(size_t pos, BuildableVertex* buildable){
         hexVertices[pos] = buildable;
+        hexVertices[pos]->setPos(pos);
     }
-    void Tile::setEdgeAtPos(size_t pos, Buildable* buildable){
+    void Tile::setEdgeAtPos(size_t pos, BuildableEdge* buildable){
         hexEdges[pos] = buildable;
+        hexEdges[pos]->setPos(pos);
     }
     void Tile::setResource(ResourceType resource){
         this->resource = resource;
@@ -55,10 +57,10 @@ namespace ariel{
     vector<Player> Tile::getPlayers() const{
         return this->players;
     }
-    Buildable* Tile::getVertex(VertexPosition pos){
+    BuildableVertex* Tile::getVertex(size_t pos){
         return hexVertices[pos];
     }
-    Buildable* Tile::getEdge(EdgePosition pos){
+    BuildableEdge* Tile::getEdge(size_t pos){
         return hexEdges[pos];
     }
     bool Tile::isVertexOwner(VertexPosition pos, Player& player){

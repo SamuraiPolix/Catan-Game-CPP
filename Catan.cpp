@@ -76,24 +76,39 @@ namespace ariel {
         shuffle(developmentCards.begin(), developmentCards.end(), default_random_engine(0));
     }
 
-    void Catan::addDevelopmentCard(Player& player){
+    // returns the index of the development card
+    size_t Catan::addDevelopmentCard(Player& player){
         // add development card
-        player.addDevelopmentCard(*developmentCards.back());
+        size_t indexForPlayer = player.addDevelopmentCard(*developmentCards.back());
         // print the card
         cout << "Player " << player.getName() << " bought a development card" << endl;
         cout << "The card is: " << developmentCards.back() << endl;
         developmentCards.pop_back();
+        return indexForPlayer;
     }
 
     void Catan::giveResources(int diceRoll){
         for (size_t i = 0; i < players.size(); i++){
-            for (size_t j = 0; j < players[i]->numOfSettlements(); j++){
-                if (players[i]->getTiles()[j].getNumber() == diceRoll){
-                    ResourceType resource = players[i]->getTiles()[j].getResource();
+            vector<Tile>& playerTiles = players[i]->getTiles();
+            for (size_t j = 0; j < playerTiles.size(); j++){
+                if (playerTiles[j].getNumber() == diceRoll){
+                    ResourceType resource = playerTiles[j].getResource();
                     players[i]->addResource(resource, 1);
                 }
             }
         }
+    }
+
+    void Catan::printBoard(){
+        printPlayers();
+        board->printBoard();
+    }
+
+    void Catan::printPlayers(){
+        for (size_t i = 0; i < players.size(); i++){
+            cout << "Player #" << i << " " << *players[i] << endl;
+        }
+        
     }
 
     int Catan::printWinner(){

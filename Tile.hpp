@@ -8,7 +8,9 @@
 using std::vector, std::ostream;
 
 namespace ariel {
-    class Buildable;
+    class BuildableEdge;
+    class BuildableVertex;
+    class Player;
     class Tile
     {
         // private members
@@ -16,8 +18,8 @@ namespace ariel {
             size_t diceNumber;      // number on tile that gives resources to players when rolled
             bool hasRobber;         // if there is a robber on the tile (no resources are given when rolled)
             vector<Player> players;     // the players that have a settlement or city on the tile (they get resources when the dice number matches the tile)
-            Buildable* hexVertices[6];       // the vertices of the tile - can be settlements, cities or nothing
-            Buildable* hexEdges[6];      // The edges of the tile - can be roads or nothing
+            BuildableVertex* hexVertices[6];       // the vertices of the tile - can be settlements, cities or nothing
+            BuildableEdge* hexEdges[6];      // The edges of the tile - can be roads or nothing
             size_t x, y;        // the position of the tile on the board
         // private methods
             // void initHexVertices();
@@ -34,8 +36,8 @@ namespace ariel {
 
             friend ostream& operator<<(ostream& os, const Tile& tile);
 
-            void setVertexAtPos(size_t pos, Buildable* buildable);
-            void setEdgeAtPos(size_t pos, Buildable* buildable);
+            void setVertexAtPos(size_t pos, BuildableVertex* buildable);
+            void setEdgeAtPos(size_t pos, BuildableEdge* buildable);
 
             /*
              * Sets the vertex at the given position to a settlement.
@@ -57,8 +59,8 @@ namespace ariel {
             size_t getNumber() const;
             bool getRobber() const;
             vector<Player> getPlayers() const;
-            Buildable* getVertex(VertexPosition pos);
-            Buildable* getEdge(EdgePosition pos);
+            BuildableVertex* getVertex(size_t pos);
+            BuildableEdge* getEdge(size_t pos);
             bool isVertexOwner(VertexPosition pos, Player& player);
             bool isEdgeOwner(EdgePosition pos, Player& player);
             bool hasIndexVertex(size_t index);
