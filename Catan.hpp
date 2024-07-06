@@ -1,7 +1,6 @@
 #pragma once
 #include "Board.hpp"
 #include "Player.hpp"
-#include "DevelopmentCard.hpp"
 #include <vector>
 #include <iostream>
 
@@ -10,6 +9,7 @@ using std::vector;
 namespace ariel {
     class Player;
     class Board;
+    class DevelopmentCard;
     class Catan
     {
     // private members
@@ -24,9 +24,11 @@ namespace ariel {
     public:
         Catan(Player& p1, Player& p2, Player& p3);
         ~Catan();
+        vector<Player*> getPlayers();
         Player& getCurrentPlayer();
         void ChooseStartingPlayer();
         Board* getBoard();
+        void rolledSeven();
         void printBoard();
         void printPlayers();
         int printWinner();

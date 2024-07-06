@@ -68,8 +68,6 @@ namespace ariel {
             }
         }
 
-        
-
         // init board tiles with generated resources and numbers
         int landIndex = 0;
         int numberIndex = 0;
@@ -103,6 +101,18 @@ namespace ariel {
             }
             tilesRow.shrink_to_fit();
             this->board.push_back(tilesRow);
+        }
+                // print tiles addresses
+        for (size_t i = 0; i < 5; i++){
+            int rowsize = 3;
+            if (i == 1 || i == 3){
+                rowsize = 4;
+            } else if (i == 2){
+                rowsize = 5;
+            }
+            for (size_t j = 0; j < rowsize; j++){
+                cout << "Tile " << i << " " << j << " " << &board[i][j] << endl;
+            }
         }
     }
     Board::~Board(){
@@ -155,7 +165,7 @@ namespace ariel {
         for (size_t row = 0; row < board.size(); row++){
             for (size_t col = 0; col < board[0].size(); col++){
                 if (board[row][col].hasIndexVertex(vertexIndex)){
-                    owner.addResource(board[row][col].getResource(), 1);
+                    owner.addResource(board[row][col].getResource(), (size_t)1);
                 }
             }
         }
@@ -187,6 +197,7 @@ namespace ariel {
         for (size_t i = 0; i < this->board.size(); i++){
             for (size_t j = 0; j < this->board[i].size(); j++){
                 if (this->board[i][j].hasIndexVertex(vertexIndex)){
+                    cout << &this->board[i][j] << endl;
                     owner.addTile(this->board[i][j]);
                 }
             }

@@ -19,6 +19,8 @@ namespace ariel{
         currTurn = false;
         developmentCards = {};
         victoryPoints = 0;
+        knights = 0;
+        hasLargestArmy = false;
         color = colors[playerCounter++];
         for (int i = 0; i < 5; i++){
             resources[i] = 0;
@@ -48,6 +50,9 @@ namespace ariel{
             resources[ResourceType::Sheep-1]--;
             resources[ResourceType::Wheat-1]--;
         }
+
+        addVictoryPoints(1);        // add 1 victory point for placing a settlement
+
         return status;
     }
     string Player::getName() const{   
@@ -87,7 +92,7 @@ namespace ariel{
             throw std::invalid_argument("Player tried to buy a development card when it's not his turn");
         }
         // check if player has enough resources
-        if (ResourceType::Ore < 1 || ResourceType::Wheat < 1 || ResourceType::Sheep < 1){
+        if (resources[ResourceType::Ore-1] < 1 || resources[ResourceType::Wheat-1] < 1 || resources[ResourceType::Sheep-1] < 1){
             throw valid_resources("Player doesn't have enough resources (1 Ore, 1 Wheat, 1 Sheep) to buy a development card\n");
         }
         // remove resources
@@ -98,7 +103,7 @@ namespace ariel{
         return catan.addDevelopmentCard(*this);
     }
     // void Player::printPoints();
-    void Player::trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const int& amountSent, const int& amountReceived){
+    void Player::trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const size_t& amountSent, const size_t& amountReceived){
         // make sure its the player's turn
         if (currTurn == false){
             throw std::invalid_argument("Player tried to trade when it's not his turn");
@@ -126,11 +131,20 @@ namespace ariel{
         int dice = rand() % 6 + 1 + rand() % 6 + 1;
         cout << "Dice rolled: " << dice << endl;
         if (dice == 7){
-            // move robber
+            // Each player with more than 7 resource cards must return half of their resource cards to the bank.
+            catan.rolledSeven();
         }
         else{
             catan.giveResources(dice);
         }
+    }
+
+    size_t Player::numOfResources(){
+        size_t sum = 0;
+        for (size_t i = 0; i < 5; i++){
+            sum += resources[i];
+        }
+        return sum;
     }
 
     void Player::endTurn(Catan& catan){
@@ -141,17 +155,22 @@ namespace ariel{
         currTurn = true;
     }
 
-    int Player::getResourceAmount(ResourceType resource){
+    size_t Player::getResourceAmount(ResourceType resource){
         return resources[resource-1];
     }
 
     size_t Player::addDevelopmentCard(DevelopmentCard& card){
         developmentCards.push_back(&card);
+        if (card.getType() == CardType::VictoryPoint){
+            victoryPoints++;
+        }
         return developmentCards.size()-1;
     }
 
     int Player::useDevelopmentCard(size_t indexInHand){
         developmentCards[indexInHand]->use();
+        // remove the card from the player
+        developmentCards.erase(developmentCards.begin() + (int)indexInHand);
         return 0;
     }
 
@@ -163,6 +182,7 @@ namespace ariel{
     }
 
     void Player::addTile(Tile& tile){
+        cout<< &tile << endl;
         tiles.push_back(tile);
     }
 
@@ -176,17 +196,40 @@ namespace ariel{
     //     return 0;
     // }
 
-    void Player::addResource(ResourceType resource, int amount){
+    void Player::addResource(ResourceType resource, size_t amount){
         resources[resource-1] += amount;
     }
 
+    void Player::removeResource(ResourceType resource, size_t amount){
+        if (resources[resource-1] >= amount){
+            throw std::invalid_argument("Player doesn't have enough resources to remove\n");
+        }
+        resources[resource-1] -= amount;
+    }
+
     int Player::getVictoryPoints(){
-        return victoryPoints;
+        return victoryPoints + (hasLargestArmy ? 2 : 0);
     }
 
     int Player::addVictoryPoints(size_t points){
         victoryPoints += points;
         return victoryPoints;
+    }
+
+    void Player::updateLargestArmy(){
+        // iterate over all cards and check if player has exactly 3 knights
+        int count = 0;
+        for (size_t i = 0; i < developmentCards.size(); i++){
+            if (developmentCards[i]->getType() == CardType::Knight){
+                count++;
+            }
+        }
+        if (count >= 3){
+            hasLargestArmy = true;
+        }
+        else {
+            hasLargestArmy = false;
+        }
     }
 
     vector<Tile>& Player::getTiles(){

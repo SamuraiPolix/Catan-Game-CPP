@@ -2,6 +2,8 @@
  * Main exec file for Ex3.
  *
  */
+
+// FAST START BEGINNING: 1 1 2 3 3 4 4 4 5 16 16 17 18 18 19 22 22 23
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -93,12 +95,13 @@ int main()
         cin >> choice;
         if (choice == 1){
             currPlayer.rollDice(catan);
+            catan.printPlayers();       // print updated player resources
             int status = -1;
             while (status < 0){
                 cout << "Choose your action:" << endl;
-                cout << "1. Build a settlement" << endl;
-                cout << "2. Build a road" << endl;
-                cout << "3. Buy a development card" << endl;
+                cout << "1. Build a settlement (1 Wood, 1 Brick, 1 Sheep, 1 Wheat)" << endl;
+                cout << "2. Build a road (1 Wood, 1 Brick)" << endl;
+                cout << "3. Buy a development card (1 Ore, 1 Wheat, 1 Sheep)" << endl;
                 cout << "4. Use a development card" << endl;
                 cout << "5. Trade" << endl;
                 cout << "6. End turn" << endl;
@@ -210,6 +213,13 @@ int main()
                 else if (choice == 5){
                     dealWithTrade(currPlayer, catan);
                 }
+                else if (choice == 6){
+                    break;
+                }
+                else {
+                    cout << "Invalid choice" << endl;
+                    continue;
+                }
                 // choice 6 does nothing - goes to end of loop to end turn
             }
         }
@@ -288,7 +298,7 @@ void dealWithTrade(Player& currPlayer, Catan& catan){
             }
         } while (choiceReceive < 1 || choiceReceive > 5);
 
-        int amountSend = -1, amountReceive = -1;
+        size_t amountSend = 0, amountReceive = 0;
         // choose amout of resource to send
         do {
             cout << "Choose the amount of resources to send" << endl;

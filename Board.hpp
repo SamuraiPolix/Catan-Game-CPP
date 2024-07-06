@@ -3,16 +3,13 @@
 #include <string>
 #include "Tile.hpp"
 #include "Buildable.hpp"
+#include "Player.hpp"
 
 using std::vector, std::string;
 
 #define NUM_OF_TILES 19
 
 namespace ariel {
-    class Tile;
-    class BuildableEdge;
-    class BuildableVertex;
-    class Player;
 
     class Board
     {
@@ -49,7 +46,7 @@ namespace ariel {
         size_t boardEdges[NUM_OF_TILES][NUM_OF_VERTICES] =
         {
             {0, 1, 2, 3, 4, 5},
-            {6, 7, 8, 9, 19, 2},
+            {6, 7, 8, 9, 10, 2},
             {11, 12, 13, 14, 15, 8},
             {16, 4, 17, 18, 19, 20},
             {3, 10, 21, 22, 23, 17},

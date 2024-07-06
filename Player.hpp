@@ -23,14 +23,16 @@ namespace ariel{
 
         private:        // by default
             string name;
-            int resources[5];       // holds the amount of each resource (index i := ResourceType(i+1))
+            size_t resources[5];       // holds the amount of each resource (index i := ResourceType(i+1))
             vector<tuple<size_t, size_t>> roads;
             vector<size_t> settlements;     // holds board index of all settlements
             vector<Tile> tiles;     // holds the tiles that the player has settlements on
             bool currTurn;
             vector<DevelopmentCard*> developmentCards;
             int victoryPoints;
+            int knights;
             Color color;
+            bool hasLargestArmy;
             // Catan catan;
 
         public:
@@ -40,20 +42,23 @@ namespace ariel{
             size_t printDevelopmentCards();
             size_t buyDevelopmentCard(Catan& catan);
             size_t addDevelopmentCard(DevelopmentCard& card);
+            size_t numOfResources();
             int useDevelopmentCard(size_t indexInHand);
             void printPoints();
-            void trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const int& amountSent, const int& amountReceived);
+            void trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const size_t& amountSent, const size_t& amountReceived);
             void rollDice(Catan& catan);
             void endTurn(Catan& catan);
             void startTurn();
             string getName() const;
             int numOfSettlements();
             int numOfRoads();
-            int getResourceAmount(ResourceType resource);
+            size_t getResourceAmount(ResourceType resource);
             void addTile(Tile& tile);
-            void addResource(ResourceType resource, int amount);
+            void addResource(ResourceType resource, size_t amount);
+            void removeResource(ResourceType resource, size_t amount);
             int getVictoryPoints();
             int addVictoryPoints(size_t points);
+            void updateLargestArmy();
             // int addTilesByIndex(size_t index);
             vector<Tile>& getTiles();
             Color getColor();
