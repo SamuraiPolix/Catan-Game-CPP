@@ -33,7 +33,7 @@ namespace ariel {
         virtual void setRoad(Player& owner) = 0;
         void setPos(size_t pos);
         size_t getPos() const;
-        Player* getOwner() const;
+        Player* getOwner();
         Tile& getTile() const;
         BuildableTypes getType() const;
         size_t getIndex() const;

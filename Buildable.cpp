@@ -58,7 +58,7 @@ namespace ariel {
     size_t Buildable::getPos() const {
         return pos;
     }
-    Player* Buildable::getOwner() const{
+    Player* Buildable::getOwner(){
         return owner;
     }
     Tile& Buildable::getTile() const{

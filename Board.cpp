@@ -142,6 +142,32 @@ namespace ariel {
             throw std::invalid_argument("Failed to place settlement at " + std::to_string(index)
             + "\nInvalid index\n");
         }
+
+        // If there is a settlement 2 vertices or 1 away from chosen vertex, can't place settlement there
+        // iterate over all tiles, if tile has the vertex index, check 2 to the left and 2 to the right and 1 to the left and right of the vertex
+        for (size_t row = 0; row < board.size(); row++){
+            for (size_t col = 0; col < board[row].size(); col++){
+                if (board[row][col].hasIndexVertex(index)){
+                    for (size_t pos = 0; pos < 6; pos++){
+                        if (board[row][col].getVertex((VertexPosition)pos)->getIndex() == index){
+                            if (board[row][col].getVertex((VertexPosition)pos-1)->getType() != BuildableTypes::None ||
+                                board[row][col].getVertex((VertexPosition)pos+1)->getType() != BuildableTypes::None)
+                            {
+                                throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+                                + "\nThere is a building 1 vertex away from this vertex\n");
+                            }
+                            if (board[row][col].getVertex((VertexPosition)pos-2)->getType() != BuildableTypes::None ||
+                                board[row][col].getVertex((VertexPosition)pos+2)->getType() != BuildableTypes::None)
+                            {
+                                throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
+                                + "\nThere is a building 2 vertices away from this vertex\n");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // If player doesn't already have 2 settlments - they can place them anywhere (if the vertex is free)
         if (owner.numOfSettlements() < 2){
             // try to place a settlement at the given position, returns 0 if successful, -1 if not
@@ -167,6 +193,7 @@ namespace ariel {
             + "\nPlayer " + owner.getName() + " does not have a road connecting to this vertex\n");
         }
         // Player has a road connecting to desired settlement
+
         // try to place a settlement at the given position, returns 0 if successful, -1 if not
         if (this->board[tileY][tileX].setSettlementAt((VertexPosition)tilePos, owner) == -1){
             throw std::invalid_argument("Failed to place settlement at " + std::to_string(tileY) + ", " + std::to_string(tileX) + " on " + std::to_string(tilePos)
