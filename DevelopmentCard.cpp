@@ -1,3 +1,9 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
 #include "DevelopmentCard.hpp"
 #include <iostream>
 
@@ -140,7 +146,29 @@ namespace ariel{
     }
 
     std::ostream& operator<<(std::ostream &out, const DevelopmentCard &card){
-        return out << "Development Card";
+        switch (card.type){
+            case Promotion:
+                return out << "Promotion Card";
+                break;
+            case RoadBuilding:
+                return out << "Road Building Card";
+                break;
+            case YearOfPlenty:
+                return out << "Year of Plenty Card";
+                break;
+            case Monopoly:
+                return out << "Monopoly Card";
+                break;
+            case Knight:
+                return out << "Knight Card";
+                break;
+            case VictoryPoint:
+                return out << "Victory Point Card";
+                break;
+            default:
+                return out << "Invalid Card";
+                break;
+        }
     }
 }
 

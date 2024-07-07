@@ -1,3 +1,9 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
 #pragma once
 #include "Types.hpp"
 #include "Player.hpp"

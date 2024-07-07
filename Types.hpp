@@ -1,3 +1,9 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
 #ifndef TYPES_HPP
 #define TYPES_HPP
 #include <cstdlib>  // Include for size_t definition
@@ -52,6 +58,13 @@ namespace ariel{
         EDGE_BOTTOM_LEFT = 4,
         EDGE_LEFT = 5,
         NUM_OF_EDGES = 6
+    };
+
+    enum BuildableTypes{
+        None = 0,
+        Road = 1,
+        Settlement = 2,
+        City = 3
     };
 
     // edgePosition + - operators override

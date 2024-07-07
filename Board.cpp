@@ -1,3 +1,9 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
 #include "Board.hpp"
 #include "Types.hpp"
 #include <algorithm>
@@ -433,8 +439,8 @@ namespace ariel {
                     std::cout << std::setw(7);
                 }
             }
-            std::cout << *board[row-1][boardSize[row]-1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT)
-                        << std::setw(5) << *board[row-1][boardSize[row]-1].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
+            std::cout << *board[row-1][boardSize[row-1]-1].getEdge(EdgePosition::EDGE_BOTTOM_LEFT)
+                        << std::setw(5) << *board[row-1][boardSize[row-1]-1].getEdge(EdgePosition::EDGE_BOTTOM_RIGHT);
             std::cout << std::endl;
         }
         

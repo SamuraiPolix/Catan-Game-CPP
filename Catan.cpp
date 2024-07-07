@@ -1,3 +1,9 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
 #include "Catan.hpp"
 #include <random>
 #include <ctime>
@@ -107,6 +113,7 @@ namespace ariel {
                 if (playerTiles[j].getNumber() == diceRoll){
                     ResourceType resource = playerTiles[j].getResource();
                     players[i]->addResource(resource, 1);
+                    cout << "Player " << players[i]->getName() << " got 1 " << getResourceName(resource) << " from tile (" << playerTiles[j].getX() << ", " << playerTiles[j].getY() << ")" << endl;
                 }
             }
         }
@@ -126,8 +133,10 @@ namespace ariel {
     void Catan::rolledSeven(){
         // each player with more than 7 resources must return half of them to the bank
         cout << "7 was rolled! Players with more than 7 resources must return half of them to the bank" << endl;
+        int count = 0;
         for (size_t i = 0; i < players.size(); i++){
             if (players[i]->numOfResources() > 7){
+                count++;
                 cout << "Player " << players[i]->getName() << " has more than 7 resources" << endl;
                 cout << *players[i] << endl;
                 cout << players[i]->getName() << ", choose half of your resources to return to the bank" << endl;
@@ -152,15 +161,23 @@ namespace ariel {
                 }
             }
         }
+        if (count == 0){
+            cout << "No player has more than 7 resources" << endl;
+        }
     }
 
     int Catan::printWinner(){
-        // iterate over all players, if someone has 10 points, he won
-        for (size_t i = 0; i < players.size(); i++){
-            if (players[i]->getVictoryPoints() >= 10){
-                cout << "The winner is: " << players[i]->getName() << endl;
-                return 1;       // someone won
+        // find the player with the most victory points
+        Player& mostVictoryPoints = *players[0];
+        for (size_t i = 1; i < players.size(); i++){
+            if (players[i]->getVictoryPoints() > mostVictoryPoints.getVictoryPoints()){
+                mostVictoryPoints = *players[i];
             }
+        }
+        // check if the player with most points has 10 victory points
+        if (mostVictoryPoints.getVictoryPoints() >= 10){
+            cout << "The winner is: " << mostVictoryPoints.getName() << endl;
+            return 1;       // someone won
         }
         return 0;       // no one won yet
     }

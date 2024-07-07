@@ -1,3 +1,8 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
 
 #pragma once
 #include <iostream>
@@ -9,13 +14,6 @@ using std::ostream;
 namespace ariel {
     class Player;
     class Tile;
-
-    enum BuildableTypes{
-        None = 0,
-        Road = 1,
-        Settlement = 2,
-        City = 3
-    };
 
     class Buildable
     {

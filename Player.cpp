@@ -1,3 +1,9 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
 #include "Player.hpp"
 #include "Types.hpp"
 #include <iostream>
@@ -32,10 +38,8 @@ namespace ariel{
             throw std::invalid_argument("Player tried to place a settlement when it's not his turn");
         }
         // make sure player has enough resources, if its not the first 2 settlements
-        if (numOfSettlements() >= 2){
-            if (resources[ResourceType::Wood-1] < 1 || resources[ResourceType::Brick-1] < 1 || resources[ResourceType::Sheep-1] < 1 || resources[ResourceType::Wheat-1] < 1){
-                throw valid_resources("Player doesn't have enough resources (1 Wood, 1 Brick, 1 Sheep, 1 Wheat) to place a settlement\n");
-            }
+        if (numOfSettlements() >= 2 && !availableResourcesBuildable(BuildableTypes::Settlement)){
+            throw valid_resources("Player doesn't have enough resources (1 Wood, 1 Brick, 1 Sheep, 1 Wheat) to place a settlement\n");
         }
         // place settlement
         int status = board->placeSettlement(*this, index);
@@ -55,6 +59,23 @@ namespace ariel{
 
         return status;
     }
+    bool Player::availableResourcesBuildable(BuildableTypes type){
+        if (type == BuildableTypes::Settlement){
+            return resources[ResourceType::Wood-1] >= 1 && resources[ResourceType::Brick-1] >= 1 && resources[ResourceType::Sheep-1] >= 1 && resources[ResourceType::Wheat-1] >= 1;
+        }
+        else if (type == BuildableTypes::Road){
+            return resources[ResourceType::Wood-1] >= 1 && resources[ResourceType::Brick-1] >= 1;
+        }
+        else if (type == BuildableTypes::City){
+            return resources[ResourceType::Wheat-1] >= 2 && resources[ResourceType::Ore-1] >= 3;
+        }
+        throw std::invalid_argument("Invalid buildable type\n");
+    }
+
+    bool Player::availableResourcesDevelopmentCard(){
+        return resources[ResourceType::Ore-1] >= 1 && resources[ResourceType::Wheat-1] >= 1 && resources[ResourceType::Sheep-1] >= 1;
+    }
+
     string Player::getName() const{   
         return "\033[" + std::to_string(color) + "m" + name + "\033[0m";
     }
@@ -70,10 +91,8 @@ namespace ariel{
             throw std::invalid_argument("Player tried to place a road when it's not his turn");
         }
         // make sure player has enough resources, if its not the first 2 settlements
-        if (numOfRoads() > 2){
-            if (resources[ResourceType::Wood-1] < 1 || resources[ResourceType::Brick-1] < 1){
-                throw valid_resources("Player doesn't have enough resources (1 Wood, 1 Brick) to place a road\n");
-            }
+        if (numOfRoads() > 2 && !availableResourcesBuildable(BuildableTypes::Road)){
+            throw valid_resources("Player doesn't have enough resources (1 Wood, 1 Brick) to place a road\n");
         }
         // place road
         int status = board->placeRoad(*this, vertex1, vertex2);
@@ -92,7 +111,7 @@ namespace ariel{
             throw std::invalid_argument("Player tried to buy a development card when it's not his turn");
         }
         // check if player has enough resources
-        if (resources[ResourceType::Ore-1] < 1 || resources[ResourceType::Wheat-1] < 1 || resources[ResourceType::Sheep-1] < 1){
+        if (!availableResourcesDevelopmentCard()){
             throw valid_resources("Player doesn't have enough resources (1 Ore, 1 Wheat, 1 Sheep) to buy a development card\n");
         }
         // remove resources
@@ -122,6 +141,34 @@ namespace ariel{
         // add resources
         resources[resourceReceived-1] += amountReceived;
         player.addResource(resourceSent, amountSent);
+    }
+    void Player::trade(Player& player, vector<tuple<ResourceType, size_t>>& resourcesSent, vector<tuple<ResourceType, size_t>>& resourcesReceived){
+        // make sure its the player's turn
+        if (currTurn == false){
+            throw std::invalid_argument("Player tried to trade when it's not his turn");
+        }
+        // make sure curr player has enough resources
+        for (size_t i = 0; i < resourcesSent.size(); i++){
+            if (resources[std::get<0>(resourcesSent[i])-1] < std::get<1>(resourcesSent[i])){
+                throw valid_resources("Player doesn't have enough resources to trade\n");
+            }
+        }
+        // make sure other player has enough resources
+        for (size_t i = 0; i < resourcesReceived.size(); i++){
+            if (player.getResourceAmount(std::get<0>(resourcesReceived[i])) < std::get<1>(resourcesReceived[i])){
+                throw valid_resources("Other player doesn't have enough resources to trade\n");
+            }
+        }
+        // remove resources from curr player, add to other player
+        for (size_t i = 0; i < resourcesSent.size(); i++){
+            resources[std::get<0>(resourcesSent[i])-1] -= std::get<1>(resourcesSent[i]);
+            player.addResource(std::get<0>(resourcesSent[i]), std::get<1>(resourcesSent[i]));
+        }
+        // add resources to curr player, remove from other player
+        for (size_t i = 0; i < resourcesReceived.size(); i++){
+            resources[std::get<0>(resourcesReceived[i])-1] += std::get<1>(resourcesReceived[i]);
+            player.removeResource(std::get<0>(resourcesReceived[i]), std::get<1>(resourcesReceived[i]));
+        }
     }
     void Player::rollDice(Catan& catan){
         // make sure its the player's turn
@@ -201,7 +248,7 @@ namespace ariel{
     }
 
     void Player::removeResource(ResourceType resource, size_t amount){
-        if (resources[resource-1] >= amount){
+        if (resources[resource-1] < amount){
             throw std::invalid_argument("Player doesn't have enough resources to remove\n");
         }
         resources[resource-1] -= amount;

@@ -1,3 +1,9 @@
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
 #pragma once
 #include "Board.hpp"
 #include "Catan.hpp"
@@ -46,9 +52,12 @@ namespace ariel{
             int useDevelopmentCard(size_t indexInHand);
             void printPoints();
             void trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const size_t& amountSent, const size_t& amountReceived);
+            void trade(Player& player, vector<tuple<ResourceType, size_t>>& resourcesSent, vector<tuple<ResourceType, size_t>>& resourcesReceived);
             void rollDice(Catan& catan);
             void endTurn(Catan& catan);
             void startTurn();
+            bool availableResourcesDevelopmentCard();
+            bool availableResourcesBuildable(BuildableTypes type);
             string getName() const;
             int numOfSettlements();
             int numOfRoads();

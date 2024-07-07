@@ -1,7 +1,13 @@
-/**
+/*
+ * Email: sam.lazareanu@gmail.com
+ * ID: ****6281
+ * @SamuraiPolix - Samuel Lazareanu
+*/
+
+/*
  * Demo file for Ex3.
- *
  */
+
 #include <iostream>
 #include <stdexcept>
 #include <vector>
