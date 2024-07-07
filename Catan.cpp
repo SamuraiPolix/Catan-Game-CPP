@@ -27,18 +27,18 @@ namespace ariel {
     }
     Catan::~Catan(){
         delete board;
-        for (size_t i = 0; i < players.size(); i++){
-            delete players[i];
-        }
-        // for (size_t i = 0; i < developmentCards.size(); i++){
-        //     delete developmentCards[i];
-        // }
     }
 
     // this functions generates a random player and prints its name
     void Catan::ChooseStartingPlayer(){
         srand(time(0));
         this->currPlayer = rand() % 3;
+        std::cout << "The starting player is: " << this->getCurrentPlayer().getName() << std::endl;
+        getCurrentPlayer().startTurn();
+    }
+
+    void Catan::ChooseStartingPlayer(size_t index){
+        this->currPlayer = index;
         std::cout << "The starting player is: " << this->getCurrentPlayer().getName() << std::endl;
         getCurrentPlayer().startTurn();
     }
@@ -139,25 +139,26 @@ namespace ariel {
                 count++;
                 cout << "Player " << players[i]->getName() << " has more than 7 resources" << endl;
                 cout << *players[i] << endl;
-                cout << players[i]->getName() << ", choose half of your resources to return to the bank" << endl;
+                cout << players[i]->getName() << ", choose half of your resources (" << players[i]->numOfResources()/2 << ") to return to the bank" << endl;
                 cout << "Write your choices in the following format: <resource> <amount> <resource> <amount> ..." << endl;
-                cout << "Resources: 0. Ore, 1. Wheat, 2. Sheep, 3. Wood, 4. Brick" << endl;
+                cout << "Resources: 1. Ore, 2. Wheat, 3. Sheep, 4. Wood, 5. Brick" << endl;
                 size_t resource, amount, totalAmount = players[i]->numOfResources() / 2;
-                for (int j = 0; j < 5 && totalAmount > 0; j++){
+                while (totalAmount > 0){
                     cin >> resource >> amount;
-                    if (resource < 0 || resource > 4 || amount < 0 || amount > players[i]->getResourceAmount(ResourceType(resource))){
+                    if (resource < 1 || resource > 5 || amount < 0 || amount > players[i]->getResourceAmount(ResourceType(resource))){
                         cout << "Invalid input, try again" << endl;
-                        j--;
                         continue;
                     }
                     if (amount > totalAmount){
                         cout << "You can't return more than half of your resources, try again" << endl;
-                        j--;
                         continue;
                     }
                     totalAmount -= amount;
                     // good input
                     players[i]->removeResource(ResourceType(resource), amount);
+                    cout << "You returned " << amount << " " << getResourceName(ResourceType(resource)) << " to the bank" << endl;
+                    cout << "You still need to return " << totalAmount << " resources" << endl;
+                    cout << *players[i] << endl;
                 }
             }
         }

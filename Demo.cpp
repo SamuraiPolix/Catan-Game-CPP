@@ -21,113 +21,153 @@ using namespace ariel;
 
 int main()
 {
-    Player p1("Amit");
-    Player p2("Yossi");
+    // Create players
+    Player p1("Sam");
+    Player p2("Benjamin");
     Player p3("Dana");
+
+    // Create Catan game
     Catan catan(p1, p2, p3);
-    // Starting of the game. Every player places two settlements and two roads.
 
-    catan.ChooseStartingPlayer();   // should print the name of the starting player
-    
-    size_t choice = -1;
-    for (int playerInd = 0; playerInd < NUM_OF_PLAYER; playerInd++){
-        Player currPlayer = catan.getCurrentPlayer();
-        cout << "Player " << currPlayer.getName() << " turn" << endl;
-        cout << "Choose a vertex to place a settlement" << endl;
-        int status = -1;
-        do {
-            cin >> choice;
-            while (choice < 0){
-                cout << "Invalid choice" << endl;
-                cin >> choice;
-            }
-            status = p1.placeSettlement(choice, catan);
-            if (status == -1){
-                cout << "Please choose another" << endl;
-            }
-        } while (status == -1);
+    // Get Board
+    Board* board = catan.getBoard();
 
-        cout << "Choose an edge to place a road" << endl;
-        do {
-            cin >> choice;
-            while (choice < 0){
-                cout << "Invalid choice" << endl;
-                cin >> choice;
-            }
-            status = p1.placeRoad(choice, catan);
-            if (status == -1){
-                cout << "Please choose another" << endl;
-            }
-        } while (status == -1);
-        currPlayer.endTurn(catan);
+    // Choose starting player
+    catan.ChooseStartingPlayer(0);  // should print the name of the starting player, set to Sam for demo purposes.
+
+    // Print board and players
+    catan.printBoard();
+
+    // Place first settlements and roads
+    p1.placeSettlement(30, board);
+    p1.placeRoad(30, 40, board);
+
+    catan.printBoard();
+
+    p2.placeSettlement(32, board);
+    p2.placeRoad(32, 42, board);
+
+    catan.printBoard();
+
+    p3.placeSettlement(34, board);
+    p3.placeRoad(34, 44, board);
+
+    catan.printBoard();
+
+    p1.placeSettlement(23, board);
+    p1.placeRoad(23, 24, board);
+
+    catan.printBoard();
+
+    // p2 tries to place a settlement in the same location as p1 - should throw exception
+    try {
+        p2.placeSettlement(23, board);
     }
-
-    try
+    catch (const std::exception &e)
     {
-        p1.placeSettlement(choice, catan); // p1 tries to place a settlement in the same location as p3.
+        cout << e.what() << endl;
+    }
+    // good placement
+    p2.placeSettlement(18, board);
+
+    // p2 tries to place a road in the same location as p1 - should throw exception
+    try {
+        p2.placeRoad(23, 24, board);
     }
     catch (const std::exception &e)
     {
         cout << e.what() << endl;
     }
 
-    try
+    // p2 tries to place a road not connected to his settlement - should throw exception
+    try {
+        p2.placeRoad(0, 1, board);
+    }
+    catch (const std::exception &e)
     {
-        p2.placeSettlement(choice, catan); // p1 tries to place a settlement in p1's turn
+        cout << e.what() << endl;
+    }
+    // good placement
+    p2.placeRoad(18, 29, board);
+
+    catan.printBoard();
+
+    // p1 tries to place a settlement on another player's turn - should throw exception
+    try {
+        p1.placeSettlement(20, board);
     }
     catch (const std::exception &e)
     {
         cout << e.what() << endl;
     }
 
+    p3.placeSettlement(41, board);
+    p3.placeRoad(41, 40, board);
+
+    catan.printBoard();
+
+    // p1 turn
+    p1.rollDice(catan);
+    p1.placeRoad(30, 31, board);
+    p1.endTurn(catan);
+
+    catan.printBoard();
+
+
+    // p2 turn
+    p2.rollDice(catan);
+    p2.endTurn(catan);
+
+    catan.printBoard();
+
+
+    // p3 turn
+    p3.rollDice(catan);
+    p3.endTurn(catan);
+
+    catan.printBoard();
+
+
+    // p2 tries to roll the dice again, but it's not his turn - should throw exception
+    try {
+        p2.rollDice(catan);
+    }
+    catch (const std::exception &e)
+    {
+        cout << e.what() << endl;
+    }
+
+    // p1 turn
+    p1.rollDice(catan);
+    catan.printPlayers();
+    p1.trade(p2, ResourceType::Wood, ResourceType::Brick, 1, 1);
+    p1.endTurn(catan);
+
+    catan.printPlayers();
+
+    // p2 turn
+    p2.rollDice(catan);
+    p2.buyDevelopmentCard(catan);
+    p2.endTurn(catan);
+
+    p1.printPoints();
+    p2.printPoints();
+    p3.printPoints();
+
+    catan.printBoard();
     
+    catan.printWinner(); // Should print None because no player reached 10 points.
 
 
-    // vector<string> places = {"Forest", "Pasture Land"};
-    // vector<int> placesNum = {5, 9};
-    // p2.placeSettlement(places, placesNum, board);
-    // p2.placeRoad(places, placesNum, board); // p2 chooses Mountains, Pasture Land, and Forest with numbers 4, 9, 5.
 
-    // vector<string> places = {"Mountains", "Pasture Land"};
-    // vector<int> placesNum = {3, 8};
-    // p3.placeSettlement(places, placesNum, board);
-    // p3.placeRoad(places, placesNum, board);
-    // vector<string> places = {"Agricultural Land", "Pasture Land"};
-    // vector<int> placesNum = {3, 9};
-    // p3.placeSettlement(places, placesNum, board);
-    // p3.placeRoad(places, placesNum, board); // p3 chooses Mountains, Pasture Land, Agricultural Land, Pasture Land with numbers 3, 8, 3, 9.
 
-    // // p1 has wood,bricks, and wheat, p2 has wood, ore, and wool, p3 has ore, wool, wheat.
-    // p1.rollDice();                                    // Lets say it's print 4. Then, p2 gets ore from the mountations.
-    // p1.placeRoad({"Forest", "Hills"}, {5, 6}, board); // p1 continues to build a road.
-    // p1.endTurn();                                     // p1 ends his turn.
 
-    // p2.rollDice(); // Lets say it's print 9. Then, p3 gets wool from the Pasture Land, p2 gets wool from the Pasture Land.
-    // p2.endTurn();  // p2 ends his turn.
 
-    // p3.rollDice(); // Lets say it's print 3. Then, p3 gets wheat from the Agricultural Land and Ore from the Mountains, p1 gets wheat from the Agricultural Land.
-    // p3.endTurn();  // p3 ends his turn.
 
-    // try
-    // {
-    //     p2.rollDice(); // p2 tries to roll the dice again, but it's not his turn.
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     cout << e.what() << endl;
-    // }
 
-    // p1.rollDice();                       // Lets say it's print 6. Then, p1 gets bricks from the hills.
-    // p1.trade(p2, "wood", "brick", 1, 1); // p1 trades 1 wood for 1 brick with p2.
-    // p1.endTurn();                        // p1 ends his turn.
 
-    // p2.rollDice();           // Lets say it's print 9. Then, p3 gets wool from the Pasture Land, p2 gets wool from the Pasture Land.
-    // p2.buyDevelopmentCard(); // p2 buys a development card. Lets say it is a bonus points card.
-    // p2.endTurn();            // p2 ends his turn.
+    // Print winner
+    cout << "Winner is: " << catan.printWinner() << endl;
 
-    // p1.printPoints(); // p1 has 2 points because it has two settelments.
-    // p2.printPoints(); // p2 has 3 points because it has two settelments and a bonus points card.
-    // p3.printPoints(); // p3 has 2 points because it has two settelments.
-
-    // catan.printWinner(); // Should print None because no player reached 10 points.
+    return 0;    
 }

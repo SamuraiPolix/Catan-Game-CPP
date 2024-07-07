@@ -47,12 +47,14 @@ namespace ariel {
         shuffle(begin(allLands), end(allLands), default_random_engine(0));
         shuffle(begin(allNumbers), end(allNumbers), default_random_engine(0));
 
-// print board edges
+        #ifdef DEBUG
+        // print board edges
         for (int i = 0; i < 19; i++){
             for (int j = 0; j < 6; j++){
                 cout << "Tile " << i << " index " << j << " " << boardEdges[i][j] << endl;
             }
         }
+        #endif
 
         
         // Init all Buildables vertices
@@ -64,15 +66,19 @@ namespace ariel {
         // Init all Buildables edges
         for (size_t i = 0; i < 72; i++){
             buildablesEdges[i] = BuildableEdge(i);
+            #ifdef DEBUG
             cout << "edge" << i << " " << &buildablesEdges[i] << endl;
+            #endif
         }
 
+        #ifdef DEBUG
         // print board edges
         for (size_t i = 0; i < 19; i++){
             for (size_t j = 0; j < 6; j++){
                 cout << "Tile " << i << " index " << j << " " << boardEdges[i][j] << endl;
             }
         }
+        #endif
 
         // init board tiles with generated resources and numbers
         int landIndex = 0;
@@ -101,14 +107,17 @@ namespace ariel {
                     tilesRow[tilesRow.size()-1].setVertexAtPos(pos, &buildablesVertices[boardVertices[tile][pos]]);
                     tilesRow[tilesRow.size()-1].setEdgeAtPos(pos, &buildablesEdges[boardEdges[tile][pos]]);
 
+                    #ifdef DEBUG
                     cout << "row" << row << "col" << col << "pos" << pos  << " Tile " << tile << " index " << boardEdges[tile][pos] << " " << tilesRow[tilesRow.size()-1].getEdge((EdgePosition)pos) << " - " << &buildablesEdges[boardEdges[tile][pos]] << endl;
+                    #endif
                 }
                 tile++;
             }
             tilesRow.shrink_to_fit();
             this->board.push_back(tilesRow);
         }
-                // print tiles addresses
+        #ifdef DEBUG
+        // print tiles addresses
         for (size_t i = 0; i < 5; i++){
             int rowsize = 3;
             if (i == 1 || i == 3){
@@ -120,6 +129,7 @@ namespace ariel {
                 cout << "Tile " << i << " " << j << " " << &board[i][j] << endl;
             }
         }
+        #endif
     }
     Board::~Board(){
         // delete[] buildablesVertices;
@@ -203,7 +213,9 @@ namespace ariel {
         for (size_t i = 0; i < this->board.size(); i++){
             for (size_t j = 0; j < this->board[i].size(); j++){
                 if (this->board[i][j].hasIndexVertex(vertexIndex)){
+                    #ifdef DEBUG
                     cout << &this->board[i][j] << endl;
+                    #endif
                     owner.addTile(this->board[i][j]);
                 }
             }
@@ -328,7 +340,9 @@ namespace ariel {
                     row = rows;
                     col = cols;
                     pos = j;
+                    #ifdef DEBUG
                     cout << "row: " << row << " col: " << col << " pos: " << pos << endl;
+                    #endif
                     return 0;
                 }
             }
@@ -349,14 +363,18 @@ namespace ariel {
                     row = rows;
                     col = cols;
                     pos = j;
+                    #ifdef DEBUG
                     cout << "row: " << row << " col: " << col << " pos: " << pos << endl;
+                    #endif
                     return 0;
                 }
                 else if (boardVertices[tile][j] == index2 && j+1 < 6 && boardVertices[tile][j+1] == index1){
                     row = rows;
                     col = cols;
                     pos = j;
+                    #ifdef DEBUG
                     cout << "row: " << row << " col: " << col << " pos: " << pos << endl;
+                    #endif
                     return 0;
                 }
             }
@@ -366,40 +384,6 @@ namespace ariel {
     }
     
     void Board::printBoard(){
-        // size_t row = 0, col = 0;
-
-        // std::cout << std::setw(30) << row << col++ << VertexPosition::VERTEX_TOP
-        //               << std::setw(10) << row << col++ << VertexPosition::VERTEX_TOP
-        //               << std::setw(10) << row << col++ << VertexPosition::VERTEX_TOP
-        //               << std::endl;
-
-        // std::cout << std::setw(29) << "/" << std::setw(5) << "\\" << std::setw(7) << "/" << std::setw(5) << "\\" << std::setw(7) << "/" << std::setw(5) << "\\" << std::endl;
-        
-        // col = 0;
-
-        // std::cout << std::setw(24) << row << col++ << VertexPosition::VERTEX_TOP_LEFT 
-        //             << std::setw(10) << row << col++ << VertexPosition::VERTEX_TOP_LEFT
-        //             << std::setw(10) << row << col << VertexPosition::VERTEX_TOP_LEFT
-        //             << std::setw(10) << row << col << VertexPosition::VERTEX_TOP_RIGHT
-        //             << std::endl;
-
-        // std::cout << std::setw(25) << "|" << std::setw(12) << "|" << std::setw(12) << "|" << std::setw(12) << "|" << std::endl;
-
-        // col = 0;
-
-        // std::cout << std::setw(24) << row << col++ << VertexPosition::VERTEX_BOTTOM_LEFT
-        //             << std::setw(10) << row << col++ << VertexPosition::VERTEX_BOTTOM_LEFT
-        //             << std::setw(10) << row << col << VertexPosition::VERTEX_BOTTOM_LEFT
-        //             << std::setw(10) << row << col << VertexPosition::VERTEX_BOTTOM_RIGHT
-        //             << std::endl;
-                
-        // std::cout << std::setw(23) << "/" << std::setw(5) << "\\" << std::setw(7) << "/" << std::setw(5) << "\\" << std::setw(7) << "/" << std::setw(5) << "\\" << std::setw(7) << "/" << std::setw(5) << "\\" << std::endl;
-
-        // col = 0;
-        // row++;
-    
-    // cout << &buildablesEdges[0] << endl;
-    
     size_t boardSize[] = {3, 4, 5, 4, 3};
     size_t padding[5] = {0, 5, 10, 5, 0};
     size_t numberOfRows = sizeof(boardSize) / sizeof(boardSize[0]);

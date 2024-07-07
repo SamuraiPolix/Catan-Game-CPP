@@ -121,7 +121,9 @@ namespace ariel{
         // add development card
         return catan.addDevelopmentCard(*this);
     }
-    // void Player::printPoints();
+    void Player::printPoints(){
+        cout << this->getName() << " has " << getVictoryPoints() << " victory points" << endl;
+    }
     void Player::trade(Player& player, ResourceType resourceSent, ResourceType resourceReceived, const size_t& amountSent, const size_t& amountReceived){
         // make sure its the player's turn
         if (currTurn == false){

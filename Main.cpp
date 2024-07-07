@@ -103,7 +103,7 @@ int main()
                 int secondMenuChoice = -1;
                 while (status < 0 || secondMenuChoice != 6){
                     catan.printPlayers();       // print updated player resources
-                    cout << "Choose your action:" << endl;
+                    cout << currPlayer.getName() << ", choose your action:" << endl;
                     cout << "1. Build a settlement (1 Wood, 1 Brick, 1 Sheep, 1 Wheat)" << endl;
                     cout << "2. Build a road (1 Wood, 1 Brick)" << endl;
                     cout << "3. Buy a development card (1 Ore, 1 Wheat, 1 Sheep)" << endl;
@@ -249,7 +249,7 @@ int main()
 void dealWithTrade(Player& currPlayer, Catan& catan){
     int chosenPlayer = -1;
     do {
-        cout << currPlayer.getName() << "choose a player to trade with (enter the number next to the name)" << endl;
+        cout << currPlayer.getName() << ", choose a player to trade with (enter the number next to the name)" << endl;
         catan.printPlayersExceptCurrent();
         cin >> chosenPlayer;
         // TODO add check for invalid choice (current player or non existing player, usign a function in Catan class)

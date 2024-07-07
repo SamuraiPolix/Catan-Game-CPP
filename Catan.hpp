@@ -33,6 +33,7 @@ namespace ariel {
         vector<Player*> getPlayers();
         Player& getCurrentPlayer();
         void ChooseStartingPlayer();
+        void ChooseStartingPlayer(size_t index);     // Used in demo and tests to set starting player
         Board* getBoard();
         void rolledSeven();
         void printBoard();

@@ -90,9 +90,11 @@ namespace ariel{
         return false;
     }
     int Tile::setSettlementAt(VertexPosition pos, Player& player){
+        #ifdef DEBUG
         std::cout << "TYPE: " << hexVertices[pos]->getType() << "\n";
         std::cout << "Land: " << this->getResource() << "\n";
         std::cout << "NUM: " << this->getNumber() << "\n";
+        #endif
         if (hexVertices[pos]->getType() == BuildableTypes::None){
             hexVertices[pos]->setSettlement(player);
 
@@ -115,9 +117,11 @@ namespace ariel{
     }
 
     int Tile::setRoadAt(EdgePosition pos, Player& player){
+        #ifdef DEBUG
         std::cout << "TYPE: " << hexEdges[pos]->getType() << "\n";
         std::cout << "Land: " << this->getResource() << "\n";
         std::cout << "NUM: " << this->getNumber() << "\n";
+        #endif
         if (hexEdges[pos]->getType() == BuildableTypes::None){
             hexEdges[pos]->setRoad(player);
             return 0;
