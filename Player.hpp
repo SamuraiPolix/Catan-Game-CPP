@@ -5,13 +5,13 @@
 */
 
 #pragma once
-#include "Board.hpp"
-#include "Catan.hpp"
+// #include "Board.hpp"
+// #include "Catan.hpp"
 #include <string>
 #include <vector>
 #include <map>
 #include "Types.hpp"
-#include "DevelopmentCard.hpp"
+// #include "DevelopmentCard.hpp"
 #include "Tile.hpp"
 #include <tuple>
 
@@ -21,7 +21,8 @@ namespace ariel{
     class Board;
     class Catan;
     class Buildable;
-    class Tile;
+    // class Tile;
+    class DevelopmentCard;
     class Player
     {
         static int playerCounter;
@@ -32,7 +33,7 @@ namespace ariel{
             size_t resources[5];       // holds the amount of each resource (index i := ResourceType(i+1))
             vector<tuple<size_t, size_t>> roads;
             vector<size_t> settlements;     // holds board index of all settlements
-            vector<Tile> tiles;     // holds the tiles that the player has settlements on
+            vector<Tile*> tiles;     // holds the tiles that the player has settlements on
             bool currTurn;
             vector<DevelopmentCard*> developmentCards;
             int victoryPoints;
@@ -43,6 +44,13 @@ namespace ariel{
 
         public:
             Player(string name);
+            ~Player(){
+                developmentCards.clear();
+                settlements.clear();
+                roads.clear();
+                tiles.clear();
+                playerCounter--;
+            }
             int placeSettlement(size_t index, Board* board);
             int placeRoad(size_t vertex1, size_t vertex2, Board* board);
             size_t printDevelopmentCards();
@@ -59,17 +67,18 @@ namespace ariel{
             bool availableResourcesDevelopmentCard();
             bool availableResourcesBuildable(BuildableTypes type);
             string getName() const;
+            string getSimpleName() const;
             int numOfSettlements();
             int numOfRoads();
             size_t getResourceAmount(ResourceType resource);
-            void addTile(Tile& tile);
+            void addTile(Tile* tile);
             void addResource(ResourceType resource, size_t amount);
             void removeResource(ResourceType resource, size_t amount);
             int getVictoryPoints();
             int addVictoryPoints(size_t points);
             void updateLargestArmy();
             // int addTilesByIndex(size_t index);
-            vector<Tile>& getTiles();
+            vector<Tile*>& getTiles();
             Color getColor();
             friend ostream& operator<<(ostream& os, const Player& player);
     };

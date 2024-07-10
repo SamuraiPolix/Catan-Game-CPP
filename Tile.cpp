@@ -4,9 +4,14 @@
  * @SamuraiPolix - Samuel Lazareanu
 */
 
+#include "Player.hpp"
+#include "Buildable.hpp"
 #include "Tile.hpp"
 
 namespace ariel{
+    Tile::~Tile(){
+        players.clear();
+    }
 
     ostream& operator<<(std::ostream& os, const Tile& tile){
         os << tile.resource << " (" << tile.diceNumber << ") ";

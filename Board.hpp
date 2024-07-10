@@ -20,7 +20,7 @@ namespace ariel {
     class Board
     {
     // private members
-        vector<vector<Tile>> board;
+        vector<vector<Tile*>> board;
         vector<BuildableVertex> buildablesVertices;
         vector<BuildableEdge> buildablesEdges;
 
@@ -85,7 +85,7 @@ namespace ariel {
         void giveStartingResources(Player& owner, size_t vertexIndex);
     public:
         Board();
-        ~Board();
+        ~Board() = default;
         int placeSettlement(Player& owner, size_t index);
         int placeRoad(Player& owner, size_t index1, size_t index2);
 

@@ -5,6 +5,9 @@
 */
 
 #include "Catan.hpp"
+#include "Board.hpp"
+#include "Player.hpp"
+#include "DevelopmentCard.hpp"
 #include <random>
 #include <ctime>
 #include <iostream>
@@ -26,6 +29,7 @@ namespace ariel {
         initCards();
     }
     Catan::~Catan(){
+        players.clear();
         delete board;
     }
 
@@ -108,12 +112,12 @@ namespace ariel {
 
     void Catan::giveResources(int diceRoll){
         for (size_t i = 0; i < players.size(); i++){
-            vector<Tile>& playerTiles = players[i]->getTiles();
+            vector<Tile*>& playerTiles = players[i]->getTiles();
             for (size_t j = 0; j < playerTiles.size(); j++){
-                if (playerTiles[j].getNumber() == diceRoll){
-                    ResourceType resource = playerTiles[j].getResource();
+                if (playerTiles[j]->getNumber() == diceRoll){
+                    ResourceType resource = playerTiles[j]->getResource();
                     players[i]->addResource(resource, 1);
-                    cout << "Player " << players[i]->getName() << " got 1 " << getResourceName(resource) << " from tile (" << playerTiles[j].getX() << ", " << playerTiles[j].getY() << ")" << endl;
+                    cout << "Player " << players[i]->getName() << " got 1 " << getResourceName(resource) << " from tile (" << playerTiles[j]->getX() << ", " << playerTiles[j]->getY() << ")" << endl;
                 }
             }
         }

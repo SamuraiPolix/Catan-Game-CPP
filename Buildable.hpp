@@ -7,7 +7,7 @@
 #pragma once
 #include <iostream>
 #include "Types.hpp"
-#include "Player.hpp"
+
 
 using std::ostream;
 
@@ -26,6 +26,7 @@ namespace ariel {
         
     public:
         Buildable();
+        ~Buildable() = default;
         Buildable(size_t index);
         Buildable(BuildableTypes type, Player& owner, size_t index);
 
@@ -45,6 +46,7 @@ namespace ariel {
     {
     public:
         BuildableVertex();
+        ~BuildableVertex() = default;
         BuildableVertex(size_t index);
         BuildableVertex(BuildableTypes type, Player& owner, size_t index);
         void setSettlement(Player& owner);
@@ -56,6 +58,7 @@ namespace ariel {
     {
     public:
         BuildableEdge();
+        ~BuildableEdge() = default;
         BuildableEdge(size_t index);
         BuildableEdge(BuildableTypes type, Player& owner, size_t index);
         void setSettlement(Player& owner);

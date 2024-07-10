@@ -8,8 +8,7 @@
  * Main exec file for Ex3.
  */
 
-// FAST START BEGINNING: 1 1 2 3 3 4 4 4 5 16 16 17 18 18 19 22 22 23
-// FAST START BEGINNING GOOD PLACEMENTS: 30 30 40 32 32 42 34 34 44 23 23 24 18 18 29 41 41 40
+// FAST START BEGINNING GOOD PLACEMENTS: 29 29 30 20 20 21 33 33 34 24 24 25 10 10 9 41 41 42
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -203,6 +202,9 @@ int main()
                             cin >> useCard;
                             if (useCard == 1){
                                 currPlayer.useDevelopmentCard(cardIndex);
+                                // End turn after using a card
+                                secondMenuChoice = 6;
+                                break;
                             }
                             if (useCard != 0 && useCard != 1){
                                 cout << "Invalid choice!" << endl;
@@ -212,6 +214,10 @@ int main()
                     }
                     else if (secondMenuChoice == 4){
                         status = useDevelopmentCard(currPlayer, catan);
+                        if (status >= 0){
+                            secondMenuChoice = 6;   // end turn after using a card
+                            break;
+                        }
                     }
                     else if (secondMenuChoice == 5){
                         dealWithTrade(currPlayer, catan);
@@ -230,6 +236,10 @@ int main()
             }
             else if (firstMenuChoice == 2){
                 status1 = useDevelopmentCard(currPlayer, catan);
+                if (status1 >= 0){
+                    // go to end of loop to end turn after using card
+                    break;
+                }
             }
             else {
                 cout << "Invalid choice" << endl;

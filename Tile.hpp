@@ -6,8 +6,8 @@
 
 #pragma once
 #include "Types.hpp"
-#include "Player.hpp"
-#include "Buildable.hpp"
+// #include "Player.hpp"
+// #include "Buildable.hpp"
 #include <vector>
 #include <iostream>
 
@@ -34,6 +34,7 @@ namespace ariel {
         public:
             Tile() : x(0), y(0), resource(ResourceType::Desert), diceNumber(0), hasRobber(false) {};
             Tile(size_t _x, size_t _y, ResourceType _resource, size_t _number) : x(_x), y(_y), resource(_resource), diceNumber(_number), hasRobber(false) {};
+            ~Tile();
             void setResource(ResourceType resource);
             void setNumber(size_t number);
             void setRobber(bool hasRobber);

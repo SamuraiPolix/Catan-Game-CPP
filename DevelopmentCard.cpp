@@ -5,6 +5,8 @@
 */
 
 #include "DevelopmentCard.hpp"
+#include "Player.hpp"
+#include "Catan.hpp"
 #include <iostream>
 
 using std::cout, std::endl, std::cin;

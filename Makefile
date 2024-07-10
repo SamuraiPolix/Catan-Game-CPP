@@ -17,8 +17,8 @@ catan: Main.o $(OBJECTS)
 demo: Demo.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o demo -lstdc++
 
-test: TestCounter.o Test.o $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o test -lstdc++
+test: Test.o $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o test -lstdc++ -lm
 
 tidy:
 	clang-tidy $(CODE_SOURCES) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --

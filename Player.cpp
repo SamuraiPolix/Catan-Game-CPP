@@ -7,6 +7,10 @@
 #include "Player.hpp"
 #include "Types.hpp"
 #include <iostream>
+#include "Board.hpp"
+#include "Catan.hpp"
+#include "DevelopmentCard.hpp"
+#include "Tile.hpp"
 
 using std::vector, std::string, std::map, std::cout, std::endl;
 
@@ -78,6 +82,9 @@ namespace ariel{
 
     string Player::getName() const{   
         return "\033[" + std::to_string(color) + "m" + name + "\033[0m";
+    }
+    string Player::getSimpleName() const{   
+        return name;
     }
     int Player::numOfSettlements(){
         return settlements.size();
@@ -230,8 +237,8 @@ namespace ariel{
         return developmentCards.size();
     }
 
-    void Player::addTile(Tile& tile){
-        cout<< &tile << endl;
+    void Player::addTile(Tile* tile){
+        // cout<< tile << endl;
         tiles.push_back(tile);
     }
 
@@ -281,7 +288,7 @@ namespace ariel{
         }
     }
 
-    vector<Tile>& Player::getTiles(){
+    vector<Tile*>& Player::getTiles(){
         return tiles;
     }
 

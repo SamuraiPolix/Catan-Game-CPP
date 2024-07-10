@@ -8,8 +8,7 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
-#include "Player.hpp"
-#include "Catan.hpp"
+
 
 using std::string, std::invalid_argument;
 

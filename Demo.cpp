@@ -158,14 +158,6 @@ int main()
     
     catan.printWinner(); // Should print None because no player reached 10 points.
 
-
-
-
-
-
-
-
-
     // Print winner
     cout << "Winner is: " << catan.printWinner() << endl;
 
