@@ -131,19 +131,19 @@ namespace ariel {
         }
         #endif
     }
-    // Board::~Board(){
-    //     // for (size_t i = 0; i < 5; i++){
-    //     //     for (size_t j = 0; j < board[i].size(); j++){
-    //     //         delete &board[i][j];
-    //     //     }
-    //     // }
-    //     // for (size_t i = 0; i < 54; i++){
-    //     //     delete &buildablesVertices[i];
-    //     // }
-    //     // for (size_t i = 0; i < 72; i++){
-    //     //     delete &buildablesEdges[i];
-    //     // }
-    // }
+    Board::~Board(){
+        // for (size_t i = 0; i < 5; i++){
+        //     for (size_t j = 0; j < board[i].size(); j++){
+        //         delete board[i][j];
+        //     }
+        // }
+        // for (size_t i = 0; i < 54; i++){
+        //     delete &buildablesVertices[i];
+        // }
+        // for (size_t i = 0; i < 72; i++){
+        //     delete &buildablesEdges[i];
+        // }
+    }
 
     int Board::placeSettlement(Player& owner, size_t index){
         size_t tileX, tileY, tilePos;

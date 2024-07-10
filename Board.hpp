@@ -85,7 +85,8 @@ namespace ariel {
         void giveStartingResources(Player& owner, size_t vertexIndex);
     public:
         Board();
-        ~Board() = default;
+        // ~Board() = default;
+        ~Board();
         int placeSettlement(Player& owner, size_t index);
         int placeRoad(Player& owner, size_t index1, size_t index2);
 

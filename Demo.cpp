@@ -21,6 +21,9 @@ using namespace ariel;
 
 int main()
 {
+    const size_t numbers[18] = {29, 29, 30, 20, 20, 21, 33, 33, 34, 24, 24, 25, 10, 10, 9, 41, 41, 42};
+    size_t index = 0;
+    
     // Create players
     Player p1("Sam");
     Player p2("Benjamin");
@@ -39,40 +42,44 @@ int main()
     catan.printBoard();
 
     // Place first settlements and roads
-    p1.placeSettlement(30, board);
-    p1.placeRoad(30, 40, board);
+    p1.placeSettlement(29, board);
+    p1.placeRoad(29, 30, board);
 
+    p1.endTurn(catan);
     catan.printBoard();
 
-    p2.placeSettlement(32, board);
-    p2.placeRoad(32, 42, board);
+    p2.placeSettlement(20, board);
+    p2.placeRoad(20, 21, board);
 
+    p2.endTurn(catan);
     catan.printBoard();
 
-    p3.placeSettlement(34, board);
-    p3.placeRoad(34, 44, board);
+    p3.placeSettlement(33, board);
+    p3.placeRoad(33, 34, board);
 
+    p3.endTurn(catan);
     catan.printBoard();
 
-    p1.placeSettlement(23, board);
-    p1.placeRoad(23, 24, board);
+    p1.placeSettlement(24, board);
+    p1.placeRoad(24, 25, board);
 
+    p1.endTurn(catan);
     catan.printBoard();
 
     // p2 tries to place a settlement in the same location as p1 - should throw exception
     try {
-        p2.placeSettlement(23, board);
+        p2.placeSettlement(24, board);
     }
     catch (const std::exception &e)
     {
         cout << e.what() << endl;
     }
     // good placement
-    p2.placeSettlement(18, board);
+    p2.placeSettlement(10, board);
 
     // p2 tries to place a road in the same location as p1 - should throw exception
     try {
-        p2.placeRoad(23, 24, board);
+        p2.placeRoad(24, 25, board);
     }
     catch (const std::exception &e)
     {
@@ -88,8 +95,9 @@ int main()
         cout << e.what() << endl;
     }
     // good placement
-    p2.placeRoad(18, 29, board);
+    p2.placeRoad(10, 9, board);
 
+    p2.endTurn(catan);
     catan.printBoard();
 
     // p1 tries to place a settlement on another player's turn - should throw exception
@@ -102,13 +110,14 @@ int main()
     }
 
     p3.placeSettlement(41, board);
-    p3.placeRoad(41, 40, board);
+    p3.placeRoad(41, 42, board);
 
+    p3.endTurn(catan);
     catan.printBoard();
 
     // p1 turn
     p1.rollDice(catan);
-    p1.placeRoad(30, 31, board);
+    p1.buyDevelopmentCard(catan);
     p1.endTurn(catan);
 
     catan.printBoard();
@@ -140,14 +149,22 @@ int main()
     // p1 turn
     p1.rollDice(catan);
     catan.printPlayers();
-    p1.trade(p2, ResourceType::Wood, ResourceType::Brick, 1, 1);
+    cout << "TRADE" << endl;
+    p1.trade(p2, ResourceType::Brick, ResourceType::Wood, 1, 1);
     p1.endTurn(catan);
 
     catan.printPlayers();
 
     // p2 turn
     p2.rollDice(catan);
-    p2.buyDevelopmentCard(catan);
+    // p2 tries to trade with p1, but doesn't have enough resources - should throw exception
+    try{
+        p2.buyDevelopmentCard(catan);
+    }
+    catch (const std::exception &e)
+    {
+        cout << e.what() << endl;
+    }
     p2.endTurn(catan);
 
     p1.printPoints();

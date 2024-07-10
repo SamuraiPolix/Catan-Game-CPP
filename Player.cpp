@@ -50,13 +50,13 @@ namespace ariel{
 
         if(status == 0){
             settlements.push_back(index);
-        }
 
-        if (numOfSettlements() > 2){       // player pays for settlements after the first 2
-            resources[ResourceType::Wood-1]--;
-            resources[ResourceType::Brick-1]--;
-            resources[ResourceType::Sheep-1]--;
-            resources[ResourceType::Wheat-1]--;
+            if (numOfSettlements() > 2){       // player pays for settlements after the first 2
+                resources[ResourceType::Wood-1]--;
+                resources[ResourceType::Brick-1]--;
+                resources[ResourceType::Sheep-1]--;
+                resources[ResourceType::Wheat-1]--;
+            }
         }
 
         addVictoryPoints(1);        // add 1 victory point for placing a settlement
@@ -90,27 +90,28 @@ namespace ariel{
         return settlements.size();
     }
     int Player::numOfRoads(){
-        return roads.size();
+        return this->roads.size();
     }
     int Player::placeRoad(size_t vertex1, size_t vertex2, Board* board){
+        cout << "Player " << getName() << " is trying to place a road between " << vertex1 << " and " << vertex2 << endl;
         // make sure its the player's turn
         if (currTurn == false){
             throw std::invalid_argument("Player tried to place a road when it's not his turn");
         }
         // make sure player has enough resources, if its not the first 2 settlements
-        if (numOfRoads() > 2 && !availableResourcesBuildable(BuildableTypes::Road)){
+        if (numOfRoads() >= 2 && !availableResourcesBuildable(BuildableTypes::Road)){
             throw valid_resources("Player doesn't have enough resources (1 Wood, 1 Brick) to place a road\n");
         }
         // place road
         int status = board->placeRoad(*this, vertex1, vertex2);
         if(status == 0){
-            roads.push_back({vertex1, vertex2});
+            roads.push_back(std::make_tuple(vertex1, vertex2));
+            if (numOfRoads() > 2){       // player pays for settlements after the first 2
+                resources[ResourceType::Wood-1]--;
+                resources[ResourceType::Brick-1]--;
+            }
         }
 
-        if (numOfRoads() > 2){       // player pays for settlements after the first 2
-            resources[ResourceType::Wood-1]--;
-            resources[ResourceType::Brick-1]--;
-        }
         return status;
     }
     size_t Player::buyDevelopmentCard(Catan& catan){
@@ -146,7 +147,7 @@ namespace ariel{
         }
         // remove resources
         resources[resourceSent-1] -= amountSent;
-        player.addResource(resourceReceived, -amountReceived);
+        player.removeResource(resourceReceived, amountReceived);
         // add resources
         resources[resourceReceived-1] += amountReceived;
         player.addResource(resourceSent, amountSent);

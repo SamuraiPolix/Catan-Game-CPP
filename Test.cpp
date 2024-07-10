@@ -86,14 +86,42 @@ TEST_CASE("Test Catan giveResources") {
         player->endTurn(game);
     }
 
-
     for (Player* player : game.getPlayers()) {
         cout << player->getSimpleName() << " has " << player->numOfResources() << " resources" << endl;
         CHECK(player->numOfResources() != 0);
     }
+}
 
+TEST_CASE("Test winner"){
+    Player p1("Sam");
+    Player p2("John");
+    Player p3("Jane");
+    ariel::Catan game(p1, p2, p3);
+    game.ChooseStartingPlayer(0);
 
+    // set each player with 1 settlement and road
+    setupIndex = 0;
+    Player* player;
+    for (int i = 0; i < 3; i++) {
+        player = &game.getCurrentPlayer();
+        player->placeSettlement(numbers[setupIndex], game.getBoard());
+        setupIndex++;
+        player->placeRoad(numbers[setupIndex], numbers[setupIndex+1], game.getBoard());
+        setupIndex += 2;
+        player->endTurn(game);
+    }
 
+    game.getCurrentPlayer().addVictoryPoints(9);
 
-    
+    // set second settlement for each player
+    for (int i = 0; i < 3; i++) {
+        player = &game.getCurrentPlayer();
+        player->placeSettlement(numbers[setupIndex], game.getBoard());
+        setupIndex++;
+        player->placeRoad(numbers[setupIndex], numbers[setupIndex+1], game.getBoard());
+        setupIndex += 2;
+        player->endTurn(game);
+    }
+
+    CHECK(game.printWinner() == 0);
 }
