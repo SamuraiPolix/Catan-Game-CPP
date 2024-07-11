@@ -22,15 +22,6 @@ Each land is assigned a number between 2 and 12.
 ### Cards, Settlements, Cities, and Resources
 
 Players can use resources to buy development cards, settlements, cities, and roads.
-if (type == BuildableTypes::Settlement){
-            return resources[ResourceType::Wood-1] >= 1 && resources[ResourceType::Brick-1] >= 1 && resources[ResourceType::Sheep-1] >= 1 && resources[ResourceType::Wheat-1] >= 1;
-        }
-        else if (type == BuildableTypes::Road){
-            return resources[ResourceType::Wood-1] >= 1 && resources[ResourceType::Brick-1] >= 1;
-        }
-        else if (type == BuildableTypes::City){
-            return resources[ResourceType::Wheat-1] >= 2 && resources[ResourceType::Ore-1] >= 3;
-        }
 
 Used iheritance to create the DevelopmentCards. The DevelopmentCard class is an abstract class that has a pure virtual function called use(). The PromotionCard class is a subclass of DevelopmentCard and has 3 subclasses: RoadBuilding, YearOfPlenty, and Monopoly. The KnightCard and VictoryPointCard classes are subclasses of DevelopmentCard.
 - **Development Card**: Costs 1 wheat, 1 ore, and 1 sheep. There are 3 types of development cards:
@@ -93,14 +84,13 @@ The game ends when a player reaches 10 or more victory points.
 ### Board Structure
 
 The board consists of tiles, each holding 6 VerticeBuildables and 6 EdgeBuildables. The board is indexed by vertices and edges.
+![Board indexes planning](https://github.com/SamuraiPolix/Catan-Game-CPP/assets/52662032/69ef7f6c-4b21-4719-a26b-7bcf81effd0a)
+![Board print example](https://github.com/SamuraiPolix/Catan-Game-CPP/assets/52662032/e6d051f3-35e5-4fcb-9427-ee2d2e70fbc5)
 
-TODO: ADD PICS OF RUN AND DRAWING BEFORE
 
 
 ## Usage
 1. Clone the repository.
-
-2.
 
 Full game:
 
@@ -110,15 +100,19 @@ Full game:
 Basic usage example:
 
 A basic usage example can be found inside the Demo.cpp file.
+- `make demo` -     run using `./demo`  (simple test)
 
-Build the project using the provided 'makefile' and run:
-   - `make demo` -     run using `./demo`  (simple test)
-   - `make test` -     run using `./test`  (advanced doctest)
-   - `make tidy` -     makes sure the code is clean
-   - `make valgrind` - makes sure there are no memory leaks/problems.
+
 
 
 ### Tests
+
+Tests:
+- `make test` -     run using `./test`  (advanced doctest)
+- `make tidy` -     makes sure the code is clean
+- `make valgrind` - makes sure there are no memory leaks/problems.
+
+
 #### clang-tidy and valgrind
 Before submitting we ran clang-tidy to make sure the code is written well, and valgrind to make sure there are no memory errors or leaks.
 
